@@ -19,9 +19,10 @@ Point out the unsafe examples:
 
 ## 1:45 - Run or show the scanner
 
-If the scanner is installed, run:
+The Codespaces rebuild installs .NET 10 and installs or updates the default `Cerbi.Scanner` .NET tool. From the repository root, run the documented scanner command:
 
 ```bash
+mkdir -p scan-results
 cerbi-scanner scan \
   --path . \
   --policy policies/cerbi-policy.yml \
@@ -31,7 +32,7 @@ cerbi-scanner scan \
   --summary scan-results/build-summary.md
 ```
 
-If the scanner is not installed in the demo environment, open `examples/build-summary.md` and explain that it is sample output representing the expected scanner result.
+Generated scan output belongs under ignored `scan-results/`. Keep checked-in sample outputs under `examples/` as stable fallback demo artifacts. If the scanner is not installed in the demo environment, open `examples/build-summary.md` and explain that it is sample output representing the expected scanner result.
 
 ## 2:30 - Show the policy and pipeline failure behavior
 

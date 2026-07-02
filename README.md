@@ -28,8 +28,8 @@ The sample is intentionally small. It is designed to run in GitHub Codespaces wi
 
 Prerequisites:
 
-- .NET 9 SDK for the sample applications.
-- A Cerbi Scanner CLI installation that matches your Cerbi distribution.
+- .NET 10 SDK for the sample applications.
+- A Cerbi Scanner CLI installation that matches your Cerbi distribution. The default .NET tool package ID used by this repo is `Cerbi.Scanner`; override it with `CERBI_SCANNER_PACKAGE` only if your licensed distribution uses a different package ID.
 
 Build the samples:
 
@@ -38,16 +38,19 @@ dotnet build src/dotnet/UnsafeApi/UnsafeApi.csproj
 dotnet build src/dotnet/SafeApi/SafeApi.csproj
 ```
 
-Run the scanner when the CLI is available:
+Install or update the scanner, then run it from the repository root:
 
 ```bash
+export PATH="$PATH:$HOME/.dotnet/tools"
+dotnet tool update --global Cerbi.Scanner || dotnet tool install --global Cerbi.Scanner
+mkdir -p scan-results
 cerbi-scanner scan \
   --path . \
   --policy policies/cerbi-policy.yml \
   --fail-on error \
-  --format json --output examples/findings.local.json \
-  --sarif examples/findings.local.sarif \
-  --summary examples/build-summary.local.md
+  --format json --output scan-results/findings.json \
+  --sarif scan-results/findings.sarif \
+  --summary scan-results/build-summary.md
 ```
 
 Expected demo result: unsafe findings are reported in `src/dotnet/UnsafeApi`, while `src/dotnet/SafeApi` illustrates how developers should fix the patterns.
@@ -57,7 +60,7 @@ Expected demo result: unsafe findings are reported in `src/dotnet/UnsafeApi`, wh
 Use this path when a prospect should run the Cerbi demo without installing .NET locally.
 
 1. Click the **Open in GitHub Codespaces** badge at the top of this README.
-2. Wait for the container to build. The dev container uses the stable Microsoft .NET 9 devcontainer image, installs GitHub CLI support, restores both sample projects, and builds the demo.
+2. Wait for the container to build. The dev container uses the stable Microsoft .NET 10 devcontainer image, installs GitHub CLI support, restores both sample projects, builds the demo, and installs or updates the `Cerbi.Scanner` .NET tool.
 3. From the Codespaces terminal, verify the sample projects still build from the repository root:
 
 ```bash
@@ -85,17 +88,32 @@ cat scan-results/build-summary.md
 code scan-results/findings.json scan-results/findings.sarif
 ```
 
-Expected demo result: scanner findings point at unsafe patterns in `src/dotnet/UnsafeApi`, while `src/dotnet/SafeApi` shows safe structured logging patterns. The checked-in files under `examples/` are available as fallback sample output if a licensed scanner build is not installed.
+Expected demo result: scanner findings point at unsafe patterns in `src/dotnet/UnsafeApi`, while `src/dotnet/SafeApi` shows safe structured logging patterns. The generated `scan-results/` directory is ignored by Git; the checked-in files under `examples/` remain stable fallback sample output if a licensed scanner build is not installed.
 
 For the full Codespaces walkthrough, see `docs/codespaces.md`.
 
-### Codespaces troubleshooting
-
-If the scanner is not installed, install your licensed scanner package and then rerun the scan from the repository root:
+Exact Codespaces command users should run from the repository root:
 
 ```bash
-dotnet tool install --global <YOUR_CERBI_SCANNER_PACKAGE_ID>
+mkdir -p scan-results
+cerbi-scanner scan \
+  --path . \
+  --policy policies/cerbi-policy.yml \
+  --fail-on error \
+  --format json --output scan-results/findings.json \
+  --sarif scan-results/findings.sarif \
+  --summary scan-results/build-summary.md
+```
+
+Fresh rebuild expectation: after a Codespaces rebuild, the demo should have .NET 10, restored and built sample projects, and the current `Cerbi.Scanner` tool available as `cerbi-scanner`.
+
+### Codespaces troubleshooting
+
+If your licensed scanner package ID differs from the public default, install that package and then rerun the scan from the repository root:
+
+```bash
 export PATH="$PATH:$HOME/.dotnet/tools"
+dotnet tool update --global <YOUR_CERBI_SCANNER_PACKAGE_ID> || dotnet tool install --global <YOUR_CERBI_SCANNER_PACKAGE_ID>
 ```
 
 If package restore fails, rerun restore explicitly:
@@ -113,7 +131,7 @@ git rev-parse --show-toplevel
 cd "$(git rev-parse --show-toplevel)"
 ```
 
-The dev container does not require secrets. It does not depend on private packages by default. If your Cerbi Scanner distribution is private, set `CERBI_SCANNER_PACKAGE` to your package ID or run the install command above after authenticating to your package source.
+The dev container does not require secrets. It installs the default `Cerbi.Scanner` .NET tool package. If your Cerbi Scanner distribution is private or uses a different package ID, set `CERBI_SCANNER_PACKAGE` to your package ID or run the install/update command above after authenticating to your package source.
 
 ## Path C: see CI/CD examples
 

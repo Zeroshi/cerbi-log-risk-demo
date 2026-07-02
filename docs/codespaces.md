@@ -5,9 +5,10 @@ GitHub Codespaces gives each user their own isolated development environment for
 ## What Codespaces creates
 
 - Each user creates their own Codespace from the repository or fork they selected.
-- The container uses the Microsoft .NET 9 devcontainer image configured in `.devcontainer/devcontainer.json`.
-- Container startup restores and builds the unsafe and safe sample applications.
+- The container uses the Microsoft .NET 10 devcontainer image configured in `.devcontainer/devcontainer.json`.
+- Container startup restores and builds the unsafe and safe sample applications targeting .NET 10.
 - `README.md` and `docs/demo-script.md` open automatically in VS Code for the walkthrough.
+- The setup script installs or updates the default `Cerbi.Scanner` .NET tool package so `cerbi-scanner` is available on `PATH`.
 - No secrets are required for the sample application projects.
 
 If your Cerbi Scanner package is private, authenticate to that package source in your own Codespace before installing it. The public demo repository does not include private package credentials.
@@ -16,7 +17,7 @@ If your Cerbi Scanner package is private, authenticate to that package source in
 
 This demo is intentionally safe sample code. It contains illustrative unsafe logging patterns so the scanner can show findings, but it is not connected to production services, databases, queues, or live customer systems.
 
-No application code is uploaded to Cerbi by the sample projects or the dev container. The scanner command runs locally inside the Codespace against the checked-out repository. Generated outputs are written to local files under `scan-results/` unless you choose another output path.
+No application code is uploaded to Cerbi by the sample projects or the dev container. The scanner command runs locally inside the Codespace against the checked-out repository. Generated outputs are written to local files under ignored `scan-results/`; keep committed demo examples under `examples/`.
 
 ## Expected commands
 
@@ -33,7 +34,7 @@ dotnet build src/dotnet/UnsafeApi/UnsafeApi.csproj
 dotnet build src/dotnet/SafeApi/SafeApi.csproj
 ```
 
-Run the scanner:
+Run the scanner. This is the exact Codespaces command users should run from the repository root:
 
 ```bash
 mkdir -p scan-results
@@ -69,11 +70,11 @@ code examples/build-summary.md examples/findings.json examples/findings.sarif
 
 ### Scanner command is not found
 
-Install your licensed Cerbi Scanner package, then rerun the scan:
+If your licensed scanner package ID differs from the public default, install that package and then rerun the scan:
 
 ```bash
-dotnet tool install --global <YOUR_CERBI_SCANNER_PACKAGE_ID>
 export PATH="$PATH:$HOME/.dotnet/tools"
+dotnet tool update --global <YOUR_CERBI_SCANNER_PACKAGE_ID> || dotnet tool install --global <YOUR_CERBI_SCANNER_PACKAGE_ID>
 ```
 
 ### Restore fails
@@ -104,3 +105,7 @@ The README intentionally uses this placeholder badge target:
 ```
 
 Do not replace it with a guessed URL. After the repository is published in GitHub, generate the final Codespaces link from the GitHub UI and paste it into the badge target in `README.md`.
+
+## Fresh rebuild expectation
+
+After a full Codespaces rebuild, the demo should work without runtime mismatch errors: the container uses .NET 10, both sample APIs target `net10.0`, startup restores and builds both projects, and the `Cerbi.Scanner` tool is installed or updated before the walkthrough.
