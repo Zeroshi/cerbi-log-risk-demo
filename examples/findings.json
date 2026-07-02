@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "1.0-demo",
+  "tool": "Cerbi Scanner",
+  "isSampleOutput": true,
+  "policy": "policies/cerbi-policy.yml",
+  "failOn": "error",
+  "summary": {
+    "errors": 4,
+    "warnings": 3,
+    "result": "failed"
+  },
+  "findings": [
+    {
+      "ruleId": "CERBI003",
+      "severity": "error",
+      "file": "src/dotnet/UnsafeApi/Program.cs",
+      "line": 19,
+      "message": "Raw request body is logged as a structured field.",
+      "recommendation": "Log a stable event name and approved metadata instead of rawBody.",
+      "confidence": "high"
+    },
+    {
+      "ruleId": "CERBI001",
+      "severity": "error",
+      "file": "src/dotnet/UnsafeApi/Program.cs",
+      "line": 20,
+      "message": "Email and password appear in a log statement.",
+      "recommendation": "Omit password and avoid logging directly identifying email values.",
+      "confidence": "high"
+    },
+    {
+      "ruleId": "CERBI002",
+      "severity": "error",
+      "file": "src/dotnet/UnsafeApi/Program.cs",
+      "line": 21,
+      "message": "Authorization header or bearer token is logged.",
+      "recommendation": "Never log credentials, tokens, or authorization headers.",
+      "confidence": "high"
+    },
+    {
+      "ruleId": "CERBI001",
+      "severity": "error",
+      "file": "src/dotnet/UnsafeApi/Program.cs",
+      "line": 22,
+      "message": "SSN-like and credit-card-like values are logged.",
+      "recommendation": "Block, tokenize, or mask regulated identifiers before logging.",
+      "confidence": "high"
+    },
+    {
+      "ruleId": "CERBI004",
+      "severity": "warning",
+      "file": "src/dotnet/UnsafeApi/Program.cs",
+      "line": 23,
+      "message": "Object destructuring may expose nested sensitive fields.",
+      "recommendation": "Log explicit approved fields rather than {@payload} object dumps.",
+      "confidence": "medium"
+    },
+    {
+      "ruleId": "CERBI006",
+      "severity": "warning",
+      "file": "src/dotnet/UnsafeApi/Program.cs",
+      "line": 24,
+      "message": "High-cardinality identifiers are used as log dimensions.",
+      "recommendation": "Use correlationId for tracing and avoid indexing user/session/customer IDs by default.",
+      "confidence": "medium"
+    },
+    {
+      "ruleId": "CERBI005",
+      "severity": "warning",
+      "file": "src/dotnet/UnsafeApi/Program.cs",
+      "line": 19,
+      "message": "Required governance fields are missing from log events.",
+      "recommendation": "Include service, environment, correlationId, and eventName on governed events.",
+      "confidence": "medium"
+    }
+  ]
+}

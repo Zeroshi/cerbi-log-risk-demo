@@ -1,0 +1,66 @@
+name: Cerbi Scanner
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  cerbi-scan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    env:
+      CERBI_FAIL_ON: error
+      CERBI_SCANNER_PACKAGE: ${{ vars.CERBI_SCANNER_PACKAGE }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Build samples
+        run: |
+          dotnet build src/dotnet/UnsafeApi/UnsafeApi.csproj --configuration Release
+          dotnet build src/dotnet/SafeApi/SafeApi.csproj --configuration Release
+
+      - name: Install Cerbi Scanner
+        shell: bash
+        run: |
+          if command -v cerbi-scanner >/dev/null 2>&1; then
+            cerbi-scanner --version
+          elif [ -n "$CERBI_SCANNER_PACKAGE" ]; then
+            dotnet tool install --global "$CERBI_SCANNER_PACKAGE"
+            echo "$HOME/.dotnet/tools" >> "$GITHUB_PATH"
+          else
+            echo "Configure vars.CERBI_SCANNER_PACKAGE or preinstall cerbi-scanner on the runner." >&2
+            exit 1
+          fi
+
+      - name: Run Cerbi Scanner
+        run: |
+          mkdir -p scan-results
+          cerbi-scanner scan \
+            --path . \
+            --policy policies/cerbi-policy.yml \
+            --fail-on "$CERBI_FAIL_ON" \
+            --format json --output scan-results/findings.json \
+            --sarif scan-results/findings.sarif \
+            --summary scan-results/build-summary.md
+
+      - name: Upload scan artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cerbi-scan-results
+          path: scan-results/
+
+      - name: Upload SARIF to code scanning
+        if: always() && hashFiles('scan-results/findings.sarif') != ''
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: scan-results/findings.sarif
