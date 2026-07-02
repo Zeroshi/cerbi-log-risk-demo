@@ -1,18 +1,25 @@
 {
-  "schemaVersion": "1.0-demo",
-  "tool": "Cerbi Scanner",
-  "isSampleOutput": true,
-  "profile": "policies/cerbi_governance.json",
-  "failOn": "high",
-  "summary": {
-    "highOrCritical": 4,
-    "lowerSeverity": 3,
+  "schemaVersion": "1.1.0",
+  "tool": {
+    "name": "Cerbi.Scanner",
+    "command": "cerbi-scanner scan"
+  },
+  "scan": {
+    "path": ".",
+    "policy": "policies/cerbi-policy.yml",
+    "failOn": "error",
     "result": "failed"
+  },
+  "summary": {
+    "error": 4,
+    "warning": 3,
+    "note": 0,
+    "total": 7
   },
   "findings": [
     {
       "ruleId": "CERBI003",
-      "severity": "high",
+      "severity": "error",
       "file": "src/dotnet/UnsafeApi/Program.cs",
       "line": 19,
       "message": "Raw request body is logged as a structured field.",
@@ -21,7 +28,7 @@
     },
     {
       "ruleId": "CERBI001",
-      "severity": "high",
+      "severity": "error",
       "file": "src/dotnet/UnsafeApi/Program.cs",
       "line": 20,
       "message": "Email and password appear in a log statement.",
@@ -30,7 +37,7 @@
     },
     {
       "ruleId": "CERBI002",
-      "severity": "high",
+      "severity": "error",
       "file": "src/dotnet/UnsafeApi/Program.cs",
       "line": 21,
       "message": "Authorization header or bearer token is logged.",
@@ -39,7 +46,7 @@
     },
     {
       "ruleId": "CERBI001",
-      "severity": "high",
+      "severity": "error",
       "file": "src/dotnet/UnsafeApi/Program.cs",
       "line": 22,
       "message": "SSN-like and credit-card-like values are logged.",
