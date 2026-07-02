@@ -1,7 +1,10 @@
 {
   "name": "Cerbi Log Risk Demo",
   "image": "mcr.microsoft.com/devcontainers/dotnet:1-9.0-bookworm",
-  "postCreateCommand": "bash -lc 'dotnet --info >/tmp/dotnet-info.txt && if [ -n \"$CERBI_SCANNER_PACKAGE\" ]; then dotnet tool install -g \"$CERBI_SCANNER_PACKAGE\" || true; else echo \"Set CERBI_SCANNER_PACKAGE to install your Cerbi Scanner .NET tool package.\"; fi'",
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
   "customizations": {
     "vscode": {
       "extensions": [
