@@ -13,6 +13,13 @@ GitHub Codespaces gives each user their own isolated development environment for
 
 If your Cerbi Scanner package is private, authenticate to that package source in your own Codespace before installing it. The public demo repository does not include private package credentials.
 
+## Rebuild after devcontainer changes
+
+Devcontainer image and setup-script changes are applied when the Codespace container is created or rebuilt. If you opened this repository before a devcontainer fix landed, do one of the following:
+
+- Rebuild the existing Codespace from VS Code with **Command Palette** > **Codespaces: Rebuild Container**.
+- Or delete the broken Codespace in GitHub, then create a new Codespace from the updated `main` branch.
+
 ## Data handling and safety
 
 This demo is intentionally safe sample code. It contains illustrative unsafe logging patterns so the scanner can show findings, but it is not connected to production services, databases, queues, or live customer systems.
@@ -30,6 +37,9 @@ cd "$(git rev-parse --show-toplevel)"
 Build the sample applications:
 
 ```bash
+dotnet --version
+dotnet --list-runtimes
+cerbi-scanner --help
 dotnet build src/dotnet/UnsafeApi/UnsafeApi.csproj
 dotnet build src/dotnet/SafeApi/SafeApi.csproj
 ```
@@ -96,6 +106,10 @@ git rev-parse --show-toplevel
 cd "$(git rev-parse --show-toplevel)"
 ```
 
+### Codespace was created before a devcontainer fix
+
+Rebuild the existing Codespace from VS Code with **Command Palette** > **Codespaces: Rebuild Container**, or delete the broken Codespace and create a new Codespace from the updated branch.
+
 ## Codespaces deep link placeholder
 
 The README intentionally uses this placeholder badge target:
@@ -108,4 +122,4 @@ Do not replace it with a guessed URL. After the repository is published in GitHu
 
 ## Fresh rebuild expectation
 
-After a full Codespaces rebuild, the demo should work without runtime mismatch errors: the container uses .NET 10, both sample APIs target `net10.0`, startup restores and builds both projects, and the `Cerbi.Scanner` tool is installed or updated before the walkthrough.
+After a full Codespaces rebuild, or after deleting and recreating the Codespace from the updated branch, the demo should work without runtime mismatch errors: the container uses .NET 10, both sample APIs target `net10.0`, startup restores and builds both projects, and the `Cerbi.Scanner` tool is installed or updated before the walkthrough.

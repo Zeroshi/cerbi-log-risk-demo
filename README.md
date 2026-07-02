@@ -61,14 +61,23 @@ Use this path when a prospect should run the Cerbi demo without installing .NET 
 
 1. Click the **Open in GitHub Codespaces** badge at the top of this README.
 2. Wait for the container to build. The dev container uses the stable Microsoft .NET 10 devcontainer image, installs GitHub CLI support, restores both sample projects, builds the demo, and installs or updates the `Cerbi.Scanner` .NET tool.
-3. From the Codespaces terminal, verify the sample projects still build from the repository root:
+3. If you already had a Codespace open before a devcontainer change, rebuild it from VS Code with **Codespaces: Rebuild Container** or delete the old Codespace and create a new one from the updated branch.
+4. From the Codespaces terminal, verify the environment from the repository root:
+
+```bash
+dotnet --version
+dotnet --list-runtimes
+cerbi-scanner --help
+```
+
+5. Verify the sample projects still build:
 
 ```bash
 dotnet build src/dotnet/UnsafeApi/UnsafeApi.csproj
 dotnet build src/dotnet/SafeApi/SafeApi.csproj
 ```
 
-4. Run the scanner from the repository root:
+6. Run the scanner from the repository root:
 
 ```bash
 mkdir -p scan-results
@@ -81,7 +90,7 @@ cerbi-scanner scan \
   --summary scan-results/build-summary.md
 ```
 
-5. Review the generated findings:
+7. Review the generated findings:
 
 ```bash
 cat scan-results/build-summary.md
@@ -105,7 +114,7 @@ cerbi-scanner scan \
   --summary scan-results/build-summary.md
 ```
 
-Fresh rebuild expectation: after a Codespaces rebuild, the demo should have .NET 10, restored and built sample projects, and the current `Cerbi.Scanner` tool available as `cerbi-scanner`.
+Fresh rebuild expectation: after a Codespaces rebuild or after deleting and recreating the Codespace, the demo should have .NET 10, restored and built sample projects, and the current `Cerbi.Scanner` tool available as `cerbi-scanner`.
 
 ### Codespaces troubleshooting
 
