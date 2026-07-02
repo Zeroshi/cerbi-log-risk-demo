@@ -11,15 +11,16 @@ variables:
   CerbiFailOn: error
   CerbiPolicyPath: policies/cerbi-policy.yml
   CerbiScanPath: .
+  CerbiScannerPackage: Cerbi.Scanner
 
 steps:
   - checkout: self
 
   - task: UseDotNet@2
-    displayName: Use .NET 9 SDK
+    displayName: Use .NET 10 SDK
     inputs:
       packageType: sdk
-      version: 9.0.x
+      version: 10.0.x
 
   - script: |
       dotnet build src/dotnet/UnsafeApi/UnsafeApi.csproj --configuration Release
@@ -29,10 +30,13 @@ steps:
   # If your organization uses the Cerbi Scanner Azure DevOps extension, replace the CLI step below with that task.
   # Example inputs to map: scanPath, policyPath, failOn, sarifOutput, jsonOutput, markdownSummary.
   - script: |
-      if ! command -v cerbi-scanner >/dev/null 2>&1; then
-        echo "Install cerbi-scanner here, or replace this step with the Cerbi Scanner extension task." >&2
-        exit 1
+      export PATH="$PATH:$HOME/.dotnet/tools"
+      if dotnet tool list --global | awk 'NR > 2 { print $1 }' | grep -Fxq "$(printf '%s' "$(CerbiScannerPackage)" | tr '[:upper:]' '[:lower:]')"; then
+        dotnet tool update --global "$(CerbiScannerPackage)"
+      else
+        dotnet tool install --global "$(CerbiScannerPackage)"
       fi
+      cerbi-scanner --help
       mkdir -p $(Build.ArtifactStagingDirectory)/cerbi
       cerbi-scanner scan \
         --path "$(CerbiScanPath)" \
@@ -41,7 +45,7 @@ steps:
         --format json --output "$(Build.ArtifactStagingDirectory)/cerbi/findings.json" \
         --sarif "$(Build.ArtifactStagingDirectory)/cerbi/findings.sarif" \
         --summary "$(Build.ArtifactStagingDirectory)/cerbi/build-summary.md"
-    displayName: Run Cerbi Scanner
+    displayName: Install and run Cerbi Scanner
 
   - publish: $(Build.ArtifactStagingDirectory)/cerbi
     artifact: cerbi-scan-results
