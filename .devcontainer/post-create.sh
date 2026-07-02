@@ -7,6 +7,7 @@ cd "$repo_root"
 dotnet_tools_path="$HOME/.dotnet/tools"
 export PATH="$PATH:$dotnet_tools_path"
 scanner_package="${CERBI_SCANNER_PACKAGE:-Cerbi.Scanner}"
+scanner_version="${CERBI_SCANNER_VERSION:-1.1.0}"
 
 mkdir -p scan-results
 
@@ -36,17 +37,18 @@ echo "Building Cerbi demo projects..."
 dotnet build src/dotnet/UnsafeApi/UnsafeApi.csproj --no-restore
 dotnet build src/dotnet/SafeApi/SafeApi.csproj --no-restore
 
-echo "Installing or updating Cerbi Scanner package: ${scanner_package}..."
+echo "Installing or updating Cerbi Scanner package: ${scanner_package} >= ${scanner_version}..."
 installed_tool_ids="$(dotnet tool list --global | awk 'NR > 2 { print tolower($1) }')"
 scanner_package_id="$(printf '%s' "$scanner_package" | tr '[:upper:]' '[:lower:]')"
 
 if printf '%s\n' "$installed_tool_ids" | grep -Fxq "$scanner_package_id"; then
-  dotnet tool update --global "$scanner_package"
+  dotnet tool update --global "$scanner_package" --version "$scanner_version"
 else
-  dotnet tool install --global "$scanner_package"
+  dotnet tool install --global "$scanner_package" --version "$scanner_version"
 fi
 
 echo "Verifying Cerbi Scanner command..."
-cerbi-scanner --help
+cerbi-scanner --version
+cerbi-scanner scan --help
 
 echo "Codespaces setup complete. Run the scanner with the command documented in README.md and docs/codespaces.md."

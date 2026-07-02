@@ -5,25 +5,195 @@
     {
       "tool": {
         "driver": {
-          "name": "Cerbi Scanner",
-          "informationUri": "https://example.invalid/cerbi-scanner-demo",
+          "name": "Cerbi.Scanner",
+          "semanticVersion": "1.1.0",
+          "informationUri": "https://cerbi.io",
           "rules": [
-            { "id": "CERBI001", "name": "Sensitive structured field", "shortDescription": { "text": "Sensitive data is logged." } },
-            { "id": "CERBI002", "name": "Credential or token logged", "shortDescription": { "text": "Credential material is logged." } },
-            { "id": "CERBI003", "name": "Raw payload logged", "shortDescription": { "text": "Raw request or payload is logged." } },
-            { "id": "CERBI004", "name": "Risky object destructuring", "shortDescription": { "text": "Object destructuring can leak nested fields." } },
-            { "id": "CERBI005", "name": "Missing governance fields", "shortDescription": { "text": "Required log fields are missing." } },
-            { "id": "CERBI006", "name": "High-cardinality field", "shortDescription": { "text": "High-cardinality dimensions can increase cost." } }
+            {
+              "id": "CERBI001",
+              "name": "Sensitive structured field",
+              "shortDescription": {
+                "text": "Sensitive data is logged."
+              }
+            },
+            {
+              "id": "CERBI002",
+              "name": "Credential or token logged",
+              "shortDescription": {
+                "text": "Credential material is logged."
+              }
+            },
+            {
+              "id": "CERBI003",
+              "name": "Raw payload logged",
+              "shortDescription": {
+                "text": "Raw request or payload is logged."
+              }
+            },
+            {
+              "id": "CERBI004",
+              "name": "Risky object destructuring",
+              "shortDescription": {
+                "text": "Object destructuring can leak nested fields."
+              }
+            },
+            {
+              "id": "CERBI005",
+              "name": "Missing governance fields",
+              "shortDescription": {
+                "text": "Required log fields are missing."
+              }
+            },
+            {
+              "id": "CERBI006",
+              "name": "High-cardinality field",
+              "shortDescription": {
+                "text": "High-cardinality dimensions can increase cost."
+              }
+            }
           ]
         }
       },
+      "invocations": [
+        {
+          "executionSuccessful": false,
+          "commandLine": "cerbi-scanner scan --path . --policy policies/cerbi-policy.yml --fail-on error --format json --output scan-results/findings.json --sarif scan-results/findings.sarif --summary scan-results/build-summary.md"
+        }
+      ],
       "results": [
-        { "ruleId": "CERBI003", "level": "error", "message": { "text": "Raw request body is logged as a structured field. Recommendation: log approved metadata instead of rawBody. Confidence: high." }, "locations": [ { "physicalLocation": { "artifactLocation": { "uri": "src/dotnet/UnsafeApi/Program.cs" }, "region": { "startLine": 19 } } } ] },
-        { "ruleId": "CERBI001", "level": "error", "message": { "text": "Email and password appear in a log statement. Recommendation: omit password and avoid logging directly identifying email values. Confidence: high." }, "locations": [ { "physicalLocation": { "artifactLocation": { "uri": "src/dotnet/UnsafeApi/Program.cs" }, "region": { "startLine": 20 } } } ] },
-        { "ruleId": "CERBI002", "level": "error", "message": { "text": "Authorization header or bearer token is logged. Recommendation: never log credentials, tokens, or authorization headers. Confidence: high." }, "locations": [ { "physicalLocation": { "artifactLocation": { "uri": "src/dotnet/UnsafeApi/Program.cs" }, "region": { "startLine": 21 } } } ] },
-        { "ruleId": "CERBI001", "level": "error", "message": { "text": "SSN-like and credit-card-like values are logged. Recommendation: block, tokenize, or mask regulated identifiers. Confidence: high." }, "locations": [ { "physicalLocation": { "artifactLocation": { "uri": "src/dotnet/UnsafeApi/Program.cs" }, "region": { "startLine": 22 } } } ] },
-        { "ruleId": "CERBI004", "level": "warning", "message": { "text": "Object destructuring may expose nested sensitive fields. Recommendation: log explicit approved fields. Confidence: medium." }, "locations": [ { "physicalLocation": { "artifactLocation": { "uri": "src/dotnet/UnsafeApi/Program.cs" }, "region": { "startLine": 23 } } } ] },
-        { "ruleId": "CERBI006", "level": "warning", "message": { "text": "High-cardinality identifiers are used as log dimensions. Recommendation: avoid indexing user/session/customer IDs by default. Confidence: medium." }, "locations": [ { "physicalLocation": { "artifactLocation": { "uri": "src/dotnet/UnsafeApi/Program.cs" }, "region": { "startLine": 24 } } } ] }
+        {
+          "ruleId": "CERBI003",
+          "level": "error",
+          "message": {
+            "text": "Raw request body is logged as a structured field. Recommendation: Log a stable event name and approved metadata instead of rawBody. Confidence: high."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/dotnet/UnsafeApi/Program.cs"
+                },
+                "region": {
+                  "startLine": 19
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CERBI001",
+          "level": "error",
+          "message": {
+            "text": "Email and password appear in a log statement. Recommendation: Omit password and avoid logging directly identifying email values. Confidence: high."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/dotnet/UnsafeApi/Program.cs"
+                },
+                "region": {
+                  "startLine": 20
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CERBI002",
+          "level": "error",
+          "message": {
+            "text": "Authorization header or bearer token is logged. Recommendation: Never log credentials, tokens, or authorization headers. Confidence: high."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/dotnet/UnsafeApi/Program.cs"
+                },
+                "region": {
+                  "startLine": 21
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CERBI001",
+          "level": "error",
+          "message": {
+            "text": "SSN-like and credit-card-like values are logged. Recommendation: Block, tokenize, or mask regulated identifiers before logging. Confidence: high."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/dotnet/UnsafeApi/Program.cs"
+                },
+                "region": {
+                  "startLine": 22
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CERBI004",
+          "level": "warning",
+          "message": {
+            "text": "Object destructuring may expose nested sensitive fields. Recommendation: Log explicit approved fields rather than {@payload} object dumps. Confidence: medium."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/dotnet/UnsafeApi/Program.cs"
+                },
+                "region": {
+                  "startLine": 23
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CERBI006",
+          "level": "warning",
+          "message": {
+            "text": "High-cardinality identifiers are used as log dimensions. Recommendation: Use correlationId for tracing and avoid indexing user/session/customer IDs by default. Confidence: medium."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/dotnet/UnsafeApi/Program.cs"
+                },
+                "region": {
+                  "startLine": 24
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CERBI005",
+          "level": "warning",
+          "message": {
+            "text": "Required governance fields are missing from log events. Recommendation: Include service, environment, correlationId, and eventName on governed events. Confidence: medium."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/dotnet/UnsafeApi/Program.cs"
+                },
+                "region": {
+                  "startLine": 19
+                }
+              }
+            }
+          ]
+        }
       ]
     }
   ]

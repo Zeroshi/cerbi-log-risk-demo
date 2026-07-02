@@ -1,5 +1,4 @@
-# Future policy-as-code example only. The current public Cerbi Scanner CLI uses the JSON governance profile at policies/cerbi_governance.json.
-# Do not pass this YAML file to `cerbi-scanner audit --profile` unless a future scanner release explicitly supports it.
+# Policy-as-code used by Cerbi.Scanner 1.1.0+ with `cerbi-scanner scan --policy`.
 version: 1
 failOn: error
 

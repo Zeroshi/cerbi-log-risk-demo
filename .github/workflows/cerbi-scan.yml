@@ -12,8 +12,9 @@ jobs:
       contents: read
       security-events: write
     env:
-      CERBI_FAIL_ON: high
+      CERBI_FAIL_ON: error
       CERBI_SCANNER_PACKAGE: ${{ vars.CERBI_SCANNER_PACKAGE }}
+      CERBI_SCANNER_VERSION: ${{ vars.CERBI_SCANNER_VERSION || '1.0.0' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -35,34 +36,23 @@ jobs:
           export PATH="$PATH:$HOME/.dotnet/tools"
           package_id="${CERBI_SCANNER_PACKAGE:-Cerbi.Scanner}"
           if dotnet tool list --global | awk 'NR > 2 { print $1 }' | grep -Fxq "$(printf '%s' "$package_id" | tr '[:upper:]' '[:lower:]')"; then
-            dotnet tool update --global "$package_id"
+            dotnet tool update --global "$package_id" --version "$CERBI_SCANNER_VERSION"
           else
-            dotnet tool install --global "$package_id"
+            dotnet tool install --global "$package_id" --version "$CERBI_SCANNER_VERSION"
           fi
           cerbi-scanner --help
-          cerbi-scanner audit --help
+          cerbi-scanner scan --help
 
       - name: Run Cerbi Scanner
         run: |
           mkdir -p scan-results
-          cerbi-scanner audit . \
-            --profile policies/cerbi_governance.json \
+          cerbi-scanner scan \
+            --path . \
+            --policy policies/cerbi-policy.yml \
             --fail-on "$CERBI_FAIL_ON" \
-            --format json \
-            --output scan-results/findings.json \
-            --snippets
-          cerbi-scanner audit . \
-            --profile policies/cerbi_governance.json \
-            --fail-on "$CERBI_FAIL_ON" \
-            --format sarif \
-            --output scan-results/findings.sarif \
-            --snippets
-          cerbi-scanner audit . \
-            --profile policies/cerbi_governance.json \
-            --fail-on "$CERBI_FAIL_ON" \
-            --format html \
-            --output scan-results/findings.html \
-            --snippets
+            --format json --output scan-results/findings.json \
+            --sarif scan-results/findings.sarif \
+            --summary scan-results/build-summary.md
 
       - name: Upload scan artifacts
         if: always()
