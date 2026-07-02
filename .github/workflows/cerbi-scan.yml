@@ -12,7 +12,7 @@ jobs:
       contents: read
       security-events: write
     env:
-      CERBI_FAIL_ON: error
+      CERBI_FAIL_ON: high
       CERBI_SCANNER_PACKAGE: ${{ vars.CERBI_SCANNER_PACKAGE }}
     steps:
       - name: Checkout
@@ -40,17 +40,29 @@ jobs:
             dotnet tool install --global "$package_id"
           fi
           cerbi-scanner --help
+          cerbi-scanner audit --help
 
       - name: Run Cerbi Scanner
         run: |
           mkdir -p scan-results
-          cerbi-scanner scan \
-            --path . \
-            --policy policies/cerbi-policy.yml \
+          cerbi-scanner audit . \
+            --profile policies/cerbi_governance.json \
             --fail-on "$CERBI_FAIL_ON" \
-            --format json --output scan-results/findings.json \
-            --sarif scan-results/findings.sarif \
-            --summary scan-results/build-summary.md
+            --format json \
+            --output scan-results/findings.json \
+            --snippets
+          cerbi-scanner audit . \
+            --profile policies/cerbi_governance.json \
+            --fail-on "$CERBI_FAIL_ON" \
+            --format sarif \
+            --output scan-results/findings.sarif \
+            --snippets
+          cerbi-scanner audit . \
+            --profile policies/cerbi_governance.json \
+            --fail-on "$CERBI_FAIL_ON" \
+            --format html \
+            --output scan-results/findings.html \
+            --snippets
 
       - name: Upload scan artifacts
         if: always()

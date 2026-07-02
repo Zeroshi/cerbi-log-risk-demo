@@ -8,8 +8,8 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-  CerbiFailOn: error
-  CerbiPolicyPath: policies/cerbi-policy.yml
+  CerbiFailOn: high
+  CerbiProfilePath: policies/cerbi_governance.json
   CerbiScanPath: .
   CerbiScannerPackage: Cerbi.Scanner
 
@@ -28,7 +28,7 @@ steps:
     displayName: Build demo APIs
 
   # If your organization uses the Cerbi Scanner Azure DevOps extension, replace the CLI step below with that task.
-  # Example inputs to map: scanPath, policyPath, failOn, sarifOutput, jsonOutput, markdownSummary.
+  # Example inputs to map: scanPath, profilePath, failOn, sarifOutput, jsonOutput, htmlOutput.
   - script: |
       export PATH="$PATH:$HOME/.dotnet/tools"
       if dotnet tool list --global | awk 'NR > 2 { print $1 }' | grep -Fxq "$(printf '%s' "$(CerbiScannerPackage)" | tr '[:upper:]' '[:lower:]')"; then
@@ -37,14 +37,26 @@ steps:
         dotnet tool install --global "$(CerbiScannerPackage)"
       fi
       cerbi-scanner --help
+      cerbi-scanner audit --help
       mkdir -p $(Build.ArtifactStagingDirectory)/cerbi
-      cerbi-scanner scan \
-        --path "$(CerbiScanPath)" \
-        --policy "$(CerbiPolicyPath)" \
+      cerbi-scanner audit "$(CerbiScanPath)" \
+        --profile "$(CerbiProfilePath)" \
         --fail-on "$(CerbiFailOn)" \
-        --format json --output "$(Build.ArtifactStagingDirectory)/cerbi/findings.json" \
-        --sarif "$(Build.ArtifactStagingDirectory)/cerbi/findings.sarif" \
-        --summary "$(Build.ArtifactStagingDirectory)/cerbi/build-summary.md"
+        --format json \
+        --output "$(Build.ArtifactStagingDirectory)/cerbi/findings.json" \
+        --snippets
+      cerbi-scanner audit "$(CerbiScanPath)" \
+        --profile "$(CerbiProfilePath)" \
+        --fail-on "$(CerbiFailOn)" \
+        --format sarif \
+        --output "$(Build.ArtifactStagingDirectory)/cerbi/findings.sarif" \
+        --snippets
+      cerbi-scanner audit "$(CerbiScanPath)" \
+        --profile "$(CerbiProfilePath)" \
+        --fail-on "$(CerbiFailOn)" \
+        --format html \
+        --output "$(Build.ArtifactStagingDirectory)/cerbi/findings.html" \
+        --snippets
     displayName: Install and run Cerbi Scanner
 
   - publish: $(Build.ArtifactStagingDirectory)/cerbi

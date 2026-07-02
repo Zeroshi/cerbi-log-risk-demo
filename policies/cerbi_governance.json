@@ -1,0 +1,56 @@
+{
+  "$schema": "https://cerbi.io/schemas/governance-profile.v1.json",
+  "version": 1,
+  "name": "cerbi-demo-governance",
+  "description": "Demo governance profile for Cerbi Scanner. Blocks sensitive and credential-like logging patterns before production.",
+  "requiredFields": [
+    "service",
+    "environment",
+    "correlationId",
+    "eventName"
+  ],
+  "disallowedFields": [
+    "password",
+    "token",
+    "accessToken",
+    "refreshToken",
+    "authorization",
+    "ssn",
+    "creditCard",
+    "cardNumber",
+    "rawBody",
+    "payload"
+  ],
+  "highCardinalityWarnings": [
+    "userId",
+    "sessionId",
+    "customerId",
+    "requestId"
+  ],
+  "rules": {
+    "CERBI001": {
+      "description": "Sensitive personal data in structured log fields.",
+      "severity": "high"
+    },
+    "CERBI002": {
+      "description": "Credential, bearer token, or authorization value logged.",
+      "severity": "critical"
+    },
+    "CERBI003": {
+      "description": "Raw request body or payload dump logged.",
+      "severity": "high"
+    },
+    "CERBI004": {
+      "description": "Risky object destructuring may leak nested sensitive fields.",
+      "severity": "medium"
+    },
+    "CERBI005": {
+      "description": "Missing required governance fields.",
+      "severity": "medium"
+    },
+    "CERBI006": {
+      "description": "High-cardinality identifiers used as log dimensions.",
+      "severity": "low"
+    }
+  }
+}

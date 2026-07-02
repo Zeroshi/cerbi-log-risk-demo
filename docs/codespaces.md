@@ -40,28 +40,43 @@ Build the sample applications:
 dotnet --version
 dotnet --list-runtimes
 cerbi-scanner --help
+cerbi-scanner audit --help
 dotnet build src/dotnet/UnsafeApi/UnsafeApi.csproj
 dotnet build src/dotnet/SafeApi/SafeApi.csproj
 ```
 
 Run the scanner. This is the exact Codespaces command users should run from the repository root:
 
+The current public scanner supports JSON, SARIF, and HTML output. The CLI writes one output format per `cerbi-scanner audit` command, so run it once per required artifact.
+
 ```bash
 mkdir -p scan-results
-cerbi-scanner scan \
-  --path . \
-  --policy policies/cerbi-policy.yml \
-  --fail-on error \
-  --format json --output scan-results/findings.json \
-  --sarif scan-results/findings.sarif \
-  --summary scan-results/build-summary.md
+cerbi-scanner audit . \
+  --profile policies/cerbi_governance.json \
+  --fail-on high \
+  --format json \
+  --output scan-results/findings.json \
+  --snippets
+
+cerbi-scanner audit . \
+  --profile policies/cerbi_governance.json \
+  --fail-on high \
+  --format sarif \
+  --output scan-results/findings.sarif \
+  --snippets
+
+cerbi-scanner audit . \
+  --profile policies/cerbi_governance.json \
+  --fail-on high \
+  --format html \
+  --output scan-results/findings.html \
+  --snippets
 ```
 
 Review the generated outputs:
 
 ```bash
-cat scan-results/build-summary.md
-code scan-results/findings.json scan-results/findings.sarif
+code scan-results/findings.json scan-results/findings.sarif scan-results/findings.html
 ```
 
 ## Expected output
@@ -73,7 +88,7 @@ The corrected examples in `src/dotnet/SafeApi` show the intended pattern: stable
 If you do not have a licensed scanner available in the Codespace, use the checked-in sample outputs instead:
 
 ```bash
-code examples/build-summary.md examples/findings.json examples/findings.sarif
+code examples/findings.json examples/findings.sarif
 ```
 
 ## Troubleshooting
