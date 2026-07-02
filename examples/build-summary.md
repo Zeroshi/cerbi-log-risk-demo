@@ -3,8 +3,8 @@
 ## Verdict: Fail
 
 * Scan path: `/workspaces/cerbi-log-risk-demo`
-* Scan time: 2026-07-02T20:14:13.2836353+00:00
-* Duration: 0.19s
+* Scan time: 2026-07-02T20:20:42.5388857+00:00
+* Duration: 0.18s
 * Files scanned: 2
 * Logging calls found: 7
 * Active findings: 12
