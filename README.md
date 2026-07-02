@@ -1,6 +1,6 @@
 # Find unsafe logs before they reach production.
 
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](REPLACE_WITH_CODESPACES_DEEP_LINK)
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)]([REPLACE_WITH_CODESPACES_DEEP_LINK](https://codespaces.new/Zeroshi/cerbi-log-risk-demo))
 
 This public demo shows the scanner-first Cerbi adoption path for platform engineering, security, and DevSecOps teams:
 
