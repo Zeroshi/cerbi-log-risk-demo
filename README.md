@@ -52,14 +52,68 @@ cerbi-scanner scan \
 
 Expected demo result: unsafe findings are reported in `src/dotnet/UnsafeApi`, while `src/dotnet/SafeApi` illustrates how developers should fix the patterns.
 
-## Path B: run the scanner in Codespaces
+## Run in GitHub Codespaces
 
-1. Open the repository in GitHub Codespaces using the badge above after replacing the placeholder link.
-2. Review `docs/demo-script.md` and `docs/what-to-look-for.md`.
-3. Build the .NET samples.
-4. Run the scanner command from Path A if your scanner CLI is available in the Codespace.
+Use this path when a prospect should run the Cerbi demo without installing .NET locally.
 
-The dev container attempts a non-blocking scanner install only when scanner package configuration is provided. It will not fail Codespaces startup if the scanner package is private or unavailable.
+1. Click the **Open in GitHub Codespaces** badge at the top of this README.
+2. Wait for the container to build. The dev container uses the stable Microsoft .NET 9 devcontainer image, installs GitHub CLI support, restores both sample projects, and builds the demo.
+3. From the Codespaces terminal, verify the sample projects still build from the repository root:
+
+```bash
+dotnet build src/dotnet/UnsafeApi/UnsafeApi.csproj
+dotnet build src/dotnet/SafeApi/SafeApi.csproj
+```
+
+4. Run the scanner from the repository root:
+
+```bash
+mkdir -p scan-results
+cerbi-scanner scan \
+  --path . \
+  --policy policies/cerbi-policy.yml \
+  --fail-on error \
+  --format json --output scan-results/findings.json \
+  --sarif scan-results/findings.sarif \
+  --summary scan-results/build-summary.md
+```
+
+5. Review the generated findings:
+
+```bash
+cat scan-results/build-summary.md
+code scan-results/findings.json scan-results/findings.sarif
+```
+
+Expected demo result: scanner findings point at unsafe patterns in `src/dotnet/UnsafeApi`, while `src/dotnet/SafeApi` shows safe structured logging patterns. The checked-in files under `examples/` are available as fallback sample output if a licensed scanner build is not installed.
+
+For the full Codespaces walkthrough, see `docs/codespaces.md`.
+
+### Codespaces troubleshooting
+
+If the scanner is not installed, install your licensed scanner package and then rerun the scan from the repository root:
+
+```bash
+dotnet tool install --global <YOUR_CERBI_SCANNER_PACKAGE_ID>
+export PATH="$PATH:$HOME/.dotnet/tools"
+```
+
+If package restore fails, rerun restore explicitly:
+
+```bash
+dotnet restore src/dotnet/UnsafeApi/UnsafeApi.csproj
+dotnet restore src/dotnet/SafeApi/SafeApi.csproj
+```
+
+If you are using a fork or a copied workspace, make sure commands run from the repository root:
+
+```bash
+pwd
+git rev-parse --show-toplevel
+cd "$(git rev-parse --show-toplevel)"
+```
+
+The dev container does not require secrets. It does not depend on private packages by default. If your Cerbi Scanner distribution is private, set `CERBI_SCANNER_PACKAGE` to your package ID or run the install command above after authenticating to your package source.
 
 ## Path C: see CI/CD examples
 
