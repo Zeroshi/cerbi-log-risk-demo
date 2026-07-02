@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Cerbi Scanner Sample Findings</title>
+</head>
+<body>
+  <main>
+    <h1>Cerbi Scanner Sample Findings</h1>
+    <p><strong>Sample output:</strong> true</p>
+    <p><strong>Profile:</strong> policies/cerbi_governance.json</p>
+    <p><strong>Fail on:</strong> high</p>
+    <h2>Unsafe logging findings</h2>
+    <ul>
+      <li>CERBI003 high: raw request body is logged as a structured field in src/dotnet/UnsafeApi/Program.cs.</li>
+      <li>CERBI001 high: email, password, SSN-like, and card-like values are logged.</li>
+      <li>CERBI002 critical: authorization header or bearer token is logged.</li>
+      <li>CERBI004 medium: object destructuring may expose nested sensitive fields.</li>
+      <li>CERBI006 low: high-cardinality identifiers are used as log dimensions.</li>
+    </ul>
+  </main>
+</body>
+</html>

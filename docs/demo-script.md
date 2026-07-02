@@ -21,33 +21,48 @@ Point out the unsafe examples:
 
 The Codespaces rebuild installs .NET 10 and installs or updates the default `Cerbi.Scanner` .NET tool. If the Codespace was created before devcontainer updates, rebuild the container or delete and recreate the Codespace from the updated branch. From the repository root, run the documented scanner command:
 
+The current public scanner supports JSON, SARIF, and HTML output. The CLI writes one output format per `cerbi-scanner audit` command, so run it once per required artifact.
+
 ```bash
 mkdir -p scan-results
-cerbi-scanner scan \
-  --path . \
-  --policy policies/cerbi-policy.yml \
-  --fail-on error \
-  --format json --output scan-results/findings.json \
-  --sarif scan-results/findings.sarif \
-  --summary scan-results/build-summary.md
+cerbi-scanner audit . \
+  --profile policies/cerbi_governance.json \
+  --fail-on high \
+  --format json \
+  --output scan-results/findings.json \
+  --snippets
+
+cerbi-scanner audit . \
+  --profile policies/cerbi_governance.json \
+  --fail-on high \
+  --format sarif \
+  --output scan-results/findings.sarif \
+  --snippets
+
+cerbi-scanner audit . \
+  --profile policies/cerbi_governance.json \
+  --fail-on high \
+  --format html \
+  --output scan-results/findings.html \
+  --snippets
 ```
 
-Generated scan output belongs under ignored `scan-results/`. Keep checked-in sample outputs under `examples/` as stable fallback demo artifacts. If the scanner is not installed in the demo environment, open `examples/build-summary.md` and explain that it is sample output representing the expected scanner result.
+Generated scan output belongs under ignored `scan-results/`. Keep checked-in sample outputs under `examples/` as stable fallback demo artifacts. If the scanner is not installed in the demo environment, open `examples/findings.json` or `examples/findings.sarif` and explain that they are sample outputs representing the expected scanner result.
 
 ## 2:30 - Show the policy and pipeline failure behavior
 
-Open `policies/cerbi-policy.yml`.
+Open `policies/cerbi_governance.json`.
 
 Explain:
 
-- `failOn: error` means error-level findings fail CI.
+- `--fail-on high` means high and critical findings fail CI for the current public scanner.
 - Required fields keep logs traceable: `service`, `environment`, `correlationId`, `eventName`.
 - Disallowed fields prevent credentials, regulated identifiers, and raw payloads from leaving the app.
 - High-cardinality warnings help reduce downstream logging cost and index pressure.
 
 Open `.github/workflows/cerbi-scan.yml` or `.azure-pipelines/cerbi-scan.yml`.
 
-Explain that teams copy the pipeline, point it at their policy, and publish JSON/SARIF/Markdown artifacts for developers and security review.
+Explain that teams copy the pipeline, point it at their policy, and publish JSON/SARIF/HTML artifacts for developers and security review.
 
 ## 3:30 - Open the safe file
 

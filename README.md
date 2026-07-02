@@ -19,10 +19,10 @@ The sample is intentionally small. It is designed to run in GitHub Codespaces wi
 
 - `src/dotnet/UnsafeApi` contains realistic unsafe ASP.NET Core logging examples.
 - `src/dotnet/SafeApi` shows corrected structured logging patterns.
-- `policies/cerbi-policy.yml` defines required fields, disallowed fields, high-cardinality warnings, and the fail threshold.
+- `policies/cerbi_governance.json` defines required fields, disallowed fields, high-cardinality warnings, and the fail threshold.
 - `.github/workflows/cerbi-scan.yml` shows GitHub Actions integration.
 - `.azure-pipelines/cerbi-scan.yml` shows Azure DevOps integration patterns.
-- `examples/` contains sample JSON, SARIF, and Markdown scanner outputs for a buyer-facing walkthrough.
+- `examples/` contains sample JSON, SARIF, and HTML scanner outputs for a buyer-facing walkthrough.
 
 ## Path A: run the scanner locally
 
@@ -40,17 +40,32 @@ dotnet build src/dotnet/SafeApi/SafeApi.csproj
 
 Install or update the scanner, then run it from the repository root:
 
+The current public scanner supports JSON, SARIF, and HTML output. The CLI writes one output format per `cerbi-scanner audit` command, so run it once per required artifact.
+
 ```bash
 export PATH="$PATH:$HOME/.dotnet/tools"
 dotnet tool update --global Cerbi.Scanner || dotnet tool install --global Cerbi.Scanner
 mkdir -p scan-results
-cerbi-scanner scan \
-  --path . \
-  --policy policies/cerbi-policy.yml \
-  --fail-on error \
-  --format json --output scan-results/findings.json \
-  --sarif scan-results/findings.sarif \
-  --summary scan-results/build-summary.md
+cerbi-scanner audit . \
+  --profile policies/cerbi_governance.json \
+  --fail-on high \
+  --format json \
+  --output scan-results/findings.json \
+  --snippets
+
+cerbi-scanner audit . \
+  --profile policies/cerbi_governance.json \
+  --fail-on high \
+  --format sarif \
+  --output scan-results/findings.sarif \
+  --snippets
+
+cerbi-scanner audit . \
+  --profile policies/cerbi_governance.json \
+  --fail-on high \
+  --format html \
+  --output scan-results/findings.html \
+  --snippets
 ```
 
 Expected demo result: unsafe findings are reported in `src/dotnet/UnsafeApi`, while `src/dotnet/SafeApi` illustrates how developers should fix the patterns.
@@ -68,6 +83,7 @@ Use this path when a prospect should run the Cerbi demo without installing .NET 
 dotnet --version
 dotnet --list-runtimes
 cerbi-scanner --help
+cerbi-scanner audit --help
 ```
 
 5. Verify the sample projects still build:
@@ -81,20 +97,32 @@ dotnet build src/dotnet/SafeApi/SafeApi.csproj
 
 ```bash
 mkdir -p scan-results
-cerbi-scanner scan \
-  --path . \
-  --policy policies/cerbi-policy.yml \
-  --fail-on error \
-  --format json --output scan-results/findings.json \
-  --sarif scan-results/findings.sarif \
-  --summary scan-results/build-summary.md
+cerbi-scanner audit . \
+  --profile policies/cerbi_governance.json \
+  --fail-on high \
+  --format json \
+  --output scan-results/findings.json \
+  --snippets
+
+cerbi-scanner audit . \
+  --profile policies/cerbi_governance.json \
+  --fail-on high \
+  --format sarif \
+  --output scan-results/findings.sarif \
+  --snippets
+
+cerbi-scanner audit . \
+  --profile policies/cerbi_governance.json \
+  --fail-on high \
+  --format html \
+  --output scan-results/findings.html \
+  --snippets
 ```
 
 7. Review the generated findings:
 
 ```bash
-cat scan-results/build-summary.md
-code scan-results/findings.json scan-results/findings.sarif
+code scan-results/findings.json scan-results/findings.sarif scan-results/findings.html
 ```
 
 Expected demo result: scanner findings point at unsafe patterns in `src/dotnet/UnsafeApi`, while `src/dotnet/SafeApi` shows safe structured logging patterns. The generated `scan-results/` directory is ignored by Git; the checked-in files under `examples/` remain stable fallback sample output if a licensed scanner build is not installed.
@@ -105,13 +133,26 @@ Exact Codespaces command users should run from the repository root:
 
 ```bash
 mkdir -p scan-results
-cerbi-scanner scan \
-  --path . \
-  --policy policies/cerbi-policy.yml \
-  --fail-on error \
-  --format json --output scan-results/findings.json \
-  --sarif scan-results/findings.sarif \
-  --summary scan-results/build-summary.md
+cerbi-scanner audit . \
+  --profile policies/cerbi_governance.json \
+  --fail-on high \
+  --format json \
+  --output scan-results/findings.json \
+  --snippets
+
+cerbi-scanner audit . \
+  --profile policies/cerbi_governance.json \
+  --fail-on high \
+  --format sarif \
+  --output scan-results/findings.sarif \
+  --snippets
+
+cerbi-scanner audit . \
+  --profile policies/cerbi_governance.json \
+  --fail-on high \
+  --format html \
+  --output scan-results/findings.html \
+  --snippets
 ```
 
 Fresh rebuild expectation: after a Codespaces rebuild or after deleting and recreating the Codespace, the demo should have .NET 10, restored and built sample projects, and the current `Cerbi.Scanner` tool available as `cerbi-scanner`.
@@ -147,7 +188,7 @@ The dev container does not require secrets. It installs the default `Cerbi.Scann
 - GitHub Actions: `.github/workflows/cerbi-scan.yml`
 - Azure DevOps: `.azure-pipelines/cerbi-scan.yml`
 
-Both pipeline examples are intentionally copy-friendly. They scan the repository with `policies/cerbi-policy.yml`, publish JSON/SARIF/Markdown outputs, and fail only when the configured policy threshold is met.
+Both pipeline examples are intentionally copy-friendly. They scan the repository with `policies/cerbi_governance.json`, publish JSON/SARIF/HTML outputs, and fail only when the configured policy threshold is met.
 
 ## Optional runtime governance story
 
