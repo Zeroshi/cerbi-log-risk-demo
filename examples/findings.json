@@ -1,84 +1,292 @@
 {
-  "schemaVersion": "1.1.0",
-  "tool": {
-    "name": "Cerbi.Scanner",
-    "command": "cerbi-scanner scan"
-  },
-  "scan": {
-    "path": ".",
-    "policy": "policies/cerbi-policy.yml",
-    "failOn": "error",
-    "result": "failed"
-  },
+  "schemaVersion": "1.0",
+  "scannerVersion": "1.1.0\u002Bfb60d2ed31d5392969ba67f910c9617627dffec0",
+  "repositoryName": "cerbi-log-risk-demo",
+  "scannedAt": "2026-07-02T20:14:13.2836353+00:00",
+  "elapsedMs": 185,
+  "scannedFileCount": 2,
+  "totalLoggingCallsFound": 7,
+  "ciThresholdBreached": true,
+  "findingCount": 12,
   "summary": {
-    "error": 4,
-    "warning": 3,
-    "note": 0,
-    "total": 7
+    "critical": 0,
+    "high": 8,
+    "medium": 0,
+    "warning": 4,
+    "low": 0,
+    "info": 0,
+    "byRule": {
+      "CERBI001": 2,
+      "CERBI002": 2,
+      "CERBI003": 4,
+      "CERBI004": 3,
+      "CERBI006": 1
+    }
   },
   "findings": [
     {
-      "ruleId": "CERBI003",
-      "severity": "error",
-      "file": "src/dotnet/UnsafeApi/Program.cs",
-      "line": 19,
-      "message": "Raw request body is logged as a structured field.",
-      "recommendation": "Log a stable event name and approved metadata instead of rawBody.",
-      "confidence": "high"
-    },
-    {
-      "ruleId": "CERBI001",
-      "severity": "error",
-      "file": "src/dotnet/UnsafeApi/Program.cs",
-      "line": 20,
-      "message": "Email and password appear in a log statement.",
-      "recommendation": "Omit password and avoid logging directly identifying email values.",
-      "confidence": "high"
-    },
-    {
       "ruleId": "CERBI002",
-      "severity": "error",
-      "file": "src/dotnet/UnsafeApi/Program.cs",
-      "line": 21,
-      "message": "Authorization header or bearer token is logged.",
-      "recommendation": "Never log credentials, tokens, or authorization headers.",
-      "confidence": "high"
+      "ruleName": "Secret-like Token or Credential In Logging Path",
+      "title": "Secret-like Token or Credential In Logging Path",
+      "severity": "High",
+      "confidence": "High",
+      "filePath": "src/dotnet/UnsafeApi/Program.cs",
+      "lineNumber": 19,
+      "column": 5,
+      "explanation": "Template field \u0027rawBody\u0027 suggests raw body or payload data is being logged. Raw request/response bodies frequently contain credentials, PII, or secrets.",
+      "message": "Template field \u0027rawBody\u0027 suggests raw body or payload data is being logged. Raw request/response bodies frequently contain credentials, PII, or secrets.",
+      "remediation": "Replace \u0027{{ rawBody }}\u0027 with individually named safe fields. If body inspection is required for debugging, apply a content-filtering or redaction pipeline before logging.",
+      "recommendation": "Replace \u0027{{ rawBody }}\u0027 with individually named safe fields. If body inspection is required for debugging, apply a content-filtering or redaction pipeline before logging.",
+      "affectedField": "rawBody",
+      "detectedFieldName": "rawBody",
+      "patternCategory": "raw-payload",
+      "loggerFramework": "MEL",
+      "tags": [
+        "raw-payload",
+        "data-exfiltration-risk"
+      ]
+    },
+    {
+      "ruleId": "CERBI003",
+      "ruleName": "Structured Log Field Is Not Allowed",
+      "title": "Structured Log Field Is Not Allowed",
+      "severity": "High",
+      "confidence": "High",
+      "filePath": "src/dotnet/UnsafeApi/Program.cs",
+      "lineNumber": 20,
+      "column": 5,
+      "explanation": "Structured field \u0027password\u0027 is not allowed by the active logging policy. Profile: \u0027default\u0027.",
+      "message": "Structured field \u0027password\u0027 is not allowed by the active logging policy. Profile: \u0027default\u0027.",
+      "remediation": "Remove the \u0027password\u0027 field from the log call. If this data is needed for debugging, use a Cerbi redaction adapter.",
+      "recommendation": "Remove the \u0027password\u0027 field from the log call. If this data is needed for debugging, use a Cerbi redaction adapter.",
+      "affectedField": "password",
+      "detectedFieldName": "password",
+      "patternCategory": "policy-field",
+      "loggerFramework": "MEL",
+      "tags": [
+        "policy-field",
+        "data-governance"
+      ]
     },
     {
       "ruleId": "CERBI001",
-      "severity": "error",
-      "file": "src/dotnet/UnsafeApi/Program.cs",
-      "line": 22,
-      "message": "SSN-like and credit-card-like values are logged.",
-      "recommendation": "Block, tokenize, or mask regulated identifiers before logging.",
-      "confidence": "high"
+      "ruleName": "Sensitive Data In Log",
+      "title": "Sensitive Data In Log",
+      "severity": "High",
+      "confidence": "High",
+      "filePath": "src/dotnet/UnsafeApi/Program.cs",
+      "lineNumber": 20,
+      "column": 5,
+      "explanation": "Field \u0027email\u0027 is considered sensitive (profile: \u0027default\u0027). Logging sensitive fields may expose PII or confidential data in log sinks.",
+      "message": "Field \u0027email\u0027 is considered sensitive (profile: \u0027default\u0027). Logging sensitive fields may expose PII or confidential data in log sinks.",
+      "remediation": "Review whether \u0027email\u0027 needs to be logged. Consider masking, hashing, or omitting this field. Use a Cerbi redaction adapter if the field is required for diagnostics.",
+      "recommendation": "Review whether \u0027email\u0027 needs to be logged. Consider masking, hashing, or omitting this field. Use a Cerbi redaction adapter if the field is required for diagnostics.",
+      "affectedField": "email",
+      "detectedFieldName": "email",
+      "patternCategory": "sensitive-field",
+      "loggerFramework": "MEL",
+      "tags": [
+        "sensitive-field",
+        "pii-risk"
+      ]
     },
     {
       "ruleId": "CERBI004",
-      "severity": "warning",
-      "file": "src/dotnet/UnsafeApi/Program.cs",
-      "line": 23,
-      "message": "Object destructuring may expose nested sensitive fields.",
-      "recommendation": "Log explicit approved fields rather than {@payload} object dumps.",
-      "confidence": "medium"
+      "ruleName": "High Cardinality Logging Field",
+      "title": "High Cardinality Logging Field",
+      "severity": "Warning",
+      "confidence": "Medium",
+      "filePath": "src/dotnet/UnsafeApi/Program.cs",
+      "lineNumber": 20,
+      "column": 5,
+      "explanation": "Structured field \u0027email\u0027 looks high-cardinality and may increase log index/storage cost.",
+      "message": "Structured field \u0027email\u0027 looks high-cardinality and may increase log index/storage cost.",
+      "remediation": "Keep \u0027email\u0027 out of indexed dimensions unless it is explicitly needed for correlation; prefer sampling, hashing, or non-indexed attributes.",
+      "recommendation": "Keep \u0027email\u0027 out of indexed dimensions unless it is explicitly needed for correlation; prefer sampling, hashing, or non-indexed attributes.",
+      "affectedField": "email",
+      "detectedFieldName": "email",
+      "patternCategory": "cost-risk",
+      "loggerFramework": "MEL",
+      "tags": [
+        "cost-risk",
+        "high-cardinality"
+      ]
+    },
+    {
+      "ruleId": "CERBI003",
+      "ruleName": "Structured Log Field Is Not Allowed",
+      "title": "Structured Log Field Is Not Allowed",
+      "severity": "High",
+      "confidence": "High",
+      "filePath": "src/dotnet/UnsafeApi/Program.cs",
+      "lineNumber": 21,
+      "column": 5,
+      "explanation": "Structured field \u0027authorization\u0027 is not allowed by the active logging policy. Profile: \u0027default\u0027.",
+      "message": "Structured field \u0027authorization\u0027 is not allowed by the active logging policy. Profile: \u0027default\u0027.",
+      "remediation": "Remove the \u0027authorization\u0027 field from the log call. If this data is needed for debugging, use a Cerbi redaction adapter.",
+      "recommendation": "Remove the \u0027authorization\u0027 field from the log call. If this data is needed for debugging, use a Cerbi redaction adapter.",
+      "affectedField": "authorization",
+      "detectedFieldName": "authorization",
+      "patternCategory": "policy-field",
+      "loggerFramework": "MEL",
+      "tags": [
+        "policy-field",
+        "data-governance"
+      ]
+    },
+    {
+      "ruleId": "CERBI003",
+      "ruleName": "Structured Log Field Is Not Allowed",
+      "title": "Structured Log Field Is Not Allowed",
+      "severity": "High",
+      "confidence": "High",
+      "filePath": "src/dotnet/UnsafeApi/Program.cs",
+      "lineNumber": 22,
+      "column": 5,
+      "explanation": "Structured field \u0027ssn\u0027 is not allowed by the active logging policy. Profile: \u0027default\u0027.",
+      "message": "Structured field \u0027ssn\u0027 is not allowed by the active logging policy. Profile: \u0027default\u0027.",
+      "remediation": "Remove the \u0027ssn\u0027 field from the log call. If this data is needed for debugging, use a Cerbi redaction adapter.",
+      "recommendation": "Remove the \u0027ssn\u0027 field from the log call. If this data is needed for debugging, use a Cerbi redaction adapter.",
+      "affectedField": "ssn",
+      "detectedFieldName": "ssn",
+      "patternCategory": "policy-field",
+      "loggerFramework": "MEL",
+      "tags": [
+        "policy-field",
+        "data-governance"
+      ]
     },
     {
       "ruleId": "CERBI006",
-      "severity": "warning",
-      "file": "src/dotnet/UnsafeApi/Program.cs",
-      "line": 24,
-      "message": "High-cardinality identifiers are used as log dimensions.",
-      "recommendation": "Use correlationId for tracing and avoid indexing user/session/customer IDs by default.",
-      "confidence": "medium"
+      "ruleName": "Exception Logging May Expose Sensitive Object State",
+      "title": "Exception Logging May Expose Sensitive Object State",
+      "severity": "Warning",
+      "confidence": "Medium",
+      "filePath": "src/dotnet/UnsafeApi/Program.cs",
+      "lineNumber": 23,
+      "column": 5,
+      "explanation": "Destructuring operator used on \u0027payload\u0027 (potentially-sensitive object type). Object destructuring serialises the full object graph into the log, which may expose sensitive fields that are not individually named.",
+      "message": "Destructuring operator used on \u0027payload\u0027 (potentially-sensitive object type). Object destructuring serialises the full object graph into the log, which may expose sensitive fields that are not individually named.",
+      "remediation": "Replace \u0027{@payload}\u0027 with individually named, safe fields. If the full object is required for diagnostics, apply a Cerbi destructuring policy or use a masking destructuring policy.",
+      "recommendation": "Replace \u0027{@payload}\u0027 with individually named, safe fields. If the full object is required for diagnostics, apply a Cerbi destructuring policy or use a masking destructuring policy.",
+      "affectedField": "payload",
+      "detectedFieldName": "payload",
+      "patternCategory": "risky-destructuring",
+      "loggerFramework": "MEL",
+      "tags": [
+        "risky-destructuring",
+        "potentially-sensitive"
+      ]
     },
     {
-      "ruleId": "CERBI005",
-      "severity": "warning",
-      "file": "src/dotnet/UnsafeApi/Program.cs",
-      "line": 19,
-      "message": "Required governance fields are missing from log events.",
-      "recommendation": "Include service, environment, correlationId, and eventName on governed events.",
-      "confidence": "medium"
+      "ruleId": "CERBI002",
+      "ruleName": "Secret-like Token or Credential In Logging Path",
+      "title": "Secret-like Token or Credential In Logging Path",
+      "severity": "High",
+      "confidence": "High",
+      "filePath": "src/dotnet/UnsafeApi/Program.cs",
+      "lineNumber": 23,
+      "column": 5,
+      "explanation": "Template field \u0027payload\u0027 suggests raw body or payload data is being logged. Raw request/response bodies frequently contain credentials, PII, or secrets.",
+      "message": "Template field \u0027payload\u0027 suggests raw body or payload data is being logged. Raw request/response bodies frequently contain credentials, PII, or secrets.",
+      "remediation": "Replace \u0027{{ payload }}\u0027 with individually named safe fields. If body inspection is required for debugging, apply a content-filtering or redaction pipeline before logging.",
+      "recommendation": "Replace \u0027{{ payload }}\u0027 with individually named safe fields. If body inspection is required for debugging, apply a content-filtering or redaction pipeline before logging.",
+      "affectedField": "payload",
+      "detectedFieldName": "payload",
+      "patternCategory": "raw-payload",
+      "loggerFramework": "MEL",
+      "tags": [
+        "raw-payload",
+        "data-exfiltration-risk"
+      ]
+    },
+    {
+      "ruleId": "CERBI003",
+      "ruleName": "Structured Log Field Is Not Allowed",
+      "title": "Structured Log Field Is Not Allowed",
+      "severity": "High",
+      "confidence": "High",
+      "filePath": "src/dotnet/UnsafeApi/Program.cs",
+      "lineNumber": 24,
+      "column": 5,
+      "explanation": "Structured field \u0027sessionId\u0027 is not allowed by the active logging policy. Profile: \u0027default\u0027.",
+      "message": "Structured field \u0027sessionId\u0027 is not allowed by the active logging policy. Profile: \u0027default\u0027.",
+      "remediation": "Remove the \u0027sessionId\u0027 field from the log call. If this data is needed for debugging, use a Cerbi redaction adapter.",
+      "recommendation": "Remove the \u0027sessionId\u0027 field from the log call. If this data is needed for debugging, use a Cerbi redaction adapter.",
+      "affectedField": "sessionId",
+      "detectedFieldName": "sessionId",
+      "patternCategory": "policy-field",
+      "loggerFramework": "MEL",
+      "tags": [
+        "policy-field",
+        "data-governance"
+      ]
+    },
+    {
+      "ruleId": "CERBI001",
+      "ruleName": "Sensitive Data In Log",
+      "title": "Sensitive Data In Log",
+      "severity": "High",
+      "confidence": "High",
+      "filePath": "src/dotnet/UnsafeApi/Program.cs",
+      "lineNumber": 24,
+      "column": 5,
+      "explanation": "Field \u0027userId\u0027 is considered sensitive (profile: \u0027default\u0027). Logging sensitive fields may expose PII or confidential data in log sinks.",
+      "message": "Field \u0027userId\u0027 is considered sensitive (profile: \u0027default\u0027). Logging sensitive fields may expose PII or confidential data in log sinks.",
+      "remediation": "Review whether \u0027userId\u0027 needs to be logged. Consider masking, hashing, or omitting this field. Use a Cerbi redaction adapter if the field is required for diagnostics.",
+      "recommendation": "Review whether \u0027userId\u0027 needs to be logged. Consider masking, hashing, or omitting this field. Use a Cerbi redaction adapter if the field is required for diagnostics.",
+      "affectedField": "userId",
+      "detectedFieldName": "userId",
+      "patternCategory": "sensitive-field",
+      "loggerFramework": "MEL",
+      "tags": [
+        "sensitive-field",
+        "pii-risk"
+      ]
+    },
+    {
+      "ruleId": "CERBI004",
+      "ruleName": "High Cardinality Logging Field",
+      "title": "High Cardinality Logging Field",
+      "severity": "Warning",
+      "confidence": "Medium",
+      "filePath": "src/dotnet/UnsafeApi/Program.cs",
+      "lineNumber": 24,
+      "column": 5,
+      "explanation": "Structured field \u0027sessionId\u0027 looks high-cardinality and may increase log index/storage cost.",
+      "message": "Structured field \u0027sessionId\u0027 looks high-cardinality and may increase log index/storage cost.",
+      "remediation": "Keep \u0027sessionId\u0027 out of indexed dimensions unless it is explicitly needed for correlation; prefer sampling, hashing, or non-indexed attributes.",
+      "recommendation": "Keep \u0027sessionId\u0027 out of indexed dimensions unless it is explicitly needed for correlation; prefer sampling, hashing, or non-indexed attributes.",
+      "affectedField": "sessionId",
+      "detectedFieldName": "sessionId",
+      "patternCategory": "cost-risk",
+      "loggerFramework": "MEL",
+      "tags": [
+        "cost-risk",
+        "high-cardinality"
+      ]
+    },
+    {
+      "ruleId": "CERBI004",
+      "ruleName": "High Cardinality Logging Field",
+      "title": "High Cardinality Logging Field",
+      "severity": "Warning",
+      "confidence": "Medium",
+      "filePath": "src/dotnet/UnsafeApi/Program.cs",
+      "lineNumber": 24,
+      "column": 5,
+      "explanation": "Structured field \u0027requestId\u0027 looks high-cardinality and may increase log index/storage cost.",
+      "message": "Structured field \u0027requestId\u0027 looks high-cardinality and may increase log index/storage cost.",
+      "remediation": "Keep \u0027requestId\u0027 out of indexed dimensions unless it is explicitly needed for correlation; prefer sampling, hashing, or non-indexed attributes.",
+      "recommendation": "Keep \u0027requestId\u0027 out of indexed dimensions unless it is explicitly needed for correlation; prefer sampling, hashing, or non-indexed attributes.",
+      "affectedField": "requestId",
+      "detectedFieldName": "requestId",
+      "patternCategory": "cost-risk",
+      "loggerFramework": "MEL",
+      "tags": [
+        "cost-risk",
+        "high-cardinality"
+      ]
     }
   ]
 }
