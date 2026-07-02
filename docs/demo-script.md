@@ -19,7 +19,7 @@ Point out the unsafe examples:
 
 ## 1:45 - Run or show the scanner
 
-The Codespaces rebuild installs .NET 10 and installs or updates the default `Cerbi.Scanner` .NET tool. From the repository root, run the documented scanner command:
+The Codespaces rebuild installs .NET 10 and installs or updates the default `Cerbi.Scanner` .NET tool. If the Codespace was created before devcontainer updates, rebuild the container or delete and recreate the Codespace from the updated branch. From the repository root, run the documented scanner command:
 
 ```bash
 mkdir -p scan-results
