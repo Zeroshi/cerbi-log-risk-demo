@@ -1,0 +1,53 @@
+# Demo Cerbi Scanner policy. Adjust rule IDs and command-line switches to your licensed scanner build.
+version: 1
+failOn: error
+
+requiredFields:
+  # These fields make log events traceable and queryable across services and environments.
+  - service
+  - environment
+  - correlationId
+  - eventName
+
+disallowedFields:
+  # Credentials and secrets must never be emitted to logs.
+  - password
+  - token
+  - accessToken
+  - refreshToken
+  - authorization
+  # Regulated personal and payment data should be blocked or masked before logging.
+  - ssn
+  - creditCard
+  - cardNumber
+  # Raw request data frequently contains unreviewed sensitive data and schema drift.
+  - rawBody
+  - payload
+
+highCardinalityWarnings:
+  # These fields can create cost and index pressure when used as primary dimensions.
+  # Prefer correlationId for tracing and stable categories for dashboards.
+  - userId
+  - sessionId
+  - customerId
+  - requestId
+
+rules:
+  CERBI001:
+    description: Sensitive personal data in structured log fields.
+    severity: error
+  CERBI002:
+    description: Credential, bearer token, or authorization value logged.
+    severity: error
+  CERBI003:
+    description: Raw request body or payload dump logged.
+    severity: error
+  CERBI004:
+    description: Risky object destructuring may leak nested sensitive fields.
+    severity: warning
+  CERBI005:
+    description: Missing required governance fields.
+    severity: warning
+  CERBI006:
+    description: High-cardinality identifiers used as log dimensions.
+    severity: warning

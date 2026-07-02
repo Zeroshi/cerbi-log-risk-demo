@@ -1,0 +1,22 @@
+{
+  "name": "Cerbi Log Risk Demo",
+  "image": "mcr.microsoft.com/devcontainers/dotnet:1-9.0-bookworm",
+  "postCreateCommand": "bash -lc 'dotnet --info >/tmp/dotnet-info.txt && if [ -n \"$CERBI_SCANNER_PACKAGE\" ]; then dotnet tool install -g \"$CERBI_SCANNER_PACKAGE\" || true; else echo \"Set CERBI_SCANNER_PACKAGE to install your Cerbi Scanner .NET tool package.\"; fi'",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-dotnettools.csdevkit",
+        "ms-dotnettools.csharp",
+        "redhat.vscode-yaml",
+        "github.vscode-github-actions"
+      ]
+    }
+  },
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  "forwardPorts": [5080, 5081],
+  "portsAttributes": {
+    "5080": { "label": "Unsafe API" },
+    "5081": { "label": "Safe API" }
+  },
+  "postAttachCommand": "code README.md docs/demo-script.md"
+}
