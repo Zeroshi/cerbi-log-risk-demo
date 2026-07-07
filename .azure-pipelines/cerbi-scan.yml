@@ -18,10 +18,10 @@ steps:
   - checkout: self
 
   - task: UseDotNet@2
-    displayName: Use .NET 10 SDK
+    displayName: Use .NET 9 SDK
     inputs:
       packageType: sdk
-      version: 10.0.x
+      version: 9.0.x
 
   - script: |
       dotnet build src/dotnet/UnsafeApi/UnsafeApi.csproj --configuration Release
