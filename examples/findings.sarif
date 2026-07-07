@@ -6,7 +6,7 @@
       "tool": {
         "driver": {
           "name": "Cerbi Scanner",
-          "version": "1.1.0\u002Bfb60d2ed31d5392969ba67f910c9617627dffec0",
+          "version": "1.1.0+fb60d2ed31d5392969ba67f910c9617627dffec0",
           "informationUri": "https://cerbi.io/scanner",
           "rules": [
             {
@@ -16,8 +16,8 @@
                 "text": "Sensitive Data In Log"
               },
               "help": {
-                "text": "Review whether \u0027email\u0027 needs to be logged. Consider masking, hashing, or omitting this field. Use a Cerbi redaction adapter if the field is required for diagnostics.",
-                "markdown": "**Sensitive Data In Log** (\u0060CERBI001\u0060)\n\nReview whether \u0027email\u0027 needs to be logged. Consider masking, hashing, or omitting this field. Use a Cerbi redaction adapter if the field is required for diagnostics.\n\nSee: https://cerbi.io/scanner/rules/cerbi001"
+                "text": "Review whether 'email' needs to be logged. Consider masking, hashing, or omitting this field. Use a Cerbi redaction adapter if the field is required for diagnostics.",
+                "markdown": "**Sensitive Data In Log** (`CERBI001`)\n\nReview whether 'email' needs to be logged. Consider masking, hashing, or omitting this field. Use a Cerbi redaction adapter if the field is required for diagnostics.\n\nSee: https://cerbi.io/scanner/rules/cerbi001"
               },
               "helpUri": "https://cerbi.io/scanner/rules/cerbi001",
               "defaultConfiguration": {
@@ -31,8 +31,8 @@
                 "text": "Secret-like Token or Credential In Logging Path"
               },
               "help": {
-                "text": "Replace \u0027{{ rawBody }}\u0027 with individually named safe fields. If body inspection is required for debugging, apply a content-filtering or redaction pipeline before logging.",
-                "markdown": "**Secret-like Token or Credential In Logging Path** (\u0060CERBI002\u0060)\n\nReplace \u0027{{ rawBody }}\u0027 with individually named safe fields. If body inspection is required for debugging, apply a content-filtering or redaction pipeline before logging.\n\nSee: https://cerbi.io/scanner/rules/cerbi002"
+                "text": "Replace '{{ rawBody }}' with individually named safe fields. If body inspection is required for debugging, apply a content-filtering or redaction pipeline before logging.",
+                "markdown": "**Secret-like Token or Credential In Logging Path** (`CERBI002`)\n\nReplace '{{ rawBody }}' with individually named safe fields. If body inspection is required for debugging, apply a content-filtering or redaction pipeline before logging.\n\nSee: https://cerbi.io/scanner/rules/cerbi002"
               },
               "helpUri": "https://cerbi.io/scanner/rules/cerbi002",
               "defaultConfiguration": {
@@ -46,8 +46,8 @@
                 "text": "Structured Log Field Is Not Allowed"
               },
               "help": {
-                "text": "Remove the \u0027password\u0027 field from the log call. If this data is needed for debugging, use a Cerbi redaction adapter.",
-                "markdown": "**Structured Log Field Is Not Allowed** (\u0060CERBI003\u0060)\n\nRemove the \u0027password\u0027 field from the log call. If this data is needed for debugging, use a Cerbi redaction adapter.\n\nSee: https://cerbi.io/scanner/rules/cerbi003"
+                "text": "Remove the 'password' field from the log call. If this data is needed for debugging, use a Cerbi redaction adapter.",
+                "markdown": "**Structured Log Field Is Not Allowed** (`CERBI003`)\n\nRemove the 'password' field from the log call. If this data is needed for debugging, use a Cerbi redaction adapter.\n\nSee: https://cerbi.io/scanner/rules/cerbi003"
               },
               "helpUri": "https://cerbi.io/scanner/rules/cerbi003",
               "defaultConfiguration": {
@@ -61,8 +61,8 @@
                 "text": "High Cardinality Logging Field"
               },
               "help": {
-                "text": "Keep \u0027email\u0027 out of indexed dimensions unless it is explicitly needed for correlation; prefer sampling, hashing, or non-indexed attributes.",
-                "markdown": "**High Cardinality Logging Field** (\u0060CERBI004\u0060)\n\nKeep \u0027email\u0027 out of indexed dimensions unless it is explicitly needed for correlation; prefer sampling, hashing, or non-indexed attributes.\n\nSee: https://cerbi.io/scanner/rules/cerbi004"
+                "text": "Keep 'email' out of indexed dimensions unless it is explicitly needed for correlation; prefer sampling, hashing, or non-indexed attributes.",
+                "markdown": "**High Cardinality Logging Field** (`CERBI004`)\n\nKeep 'email' out of indexed dimensions unless it is explicitly needed for correlation; prefer sampling, hashing, or non-indexed attributes.\n\nSee: https://cerbi.io/scanner/rules/cerbi004"
               },
               "helpUri": "https://cerbi.io/scanner/rules/cerbi004",
               "defaultConfiguration": {
@@ -76,8 +76,8 @@
                 "text": "Exception Logging May Expose Sensitive Object State"
               },
               "help": {
-                "text": "Replace \u0027{@payload}\u0027 with individually named, safe fields. If the full object is required for diagnostics, apply a Cerbi destructuring policy or use a masking destructuring policy.",
-                "markdown": "**Exception Logging May Expose Sensitive Object State** (\u0060CERBI006\u0060)\n\nReplace \u0027{@payload}\u0027 with individually named, safe fields. If the full object is required for diagnostics, apply a Cerbi destructuring policy or use a masking destructuring policy.\n\nSee: https://cerbi.io/scanner/rules/cerbi006"
+                "text": "Replace '{@payload}' with individually named, safe fields. If the full object is required for diagnostics, apply a Cerbi destructuring policy or use a masking destructuring policy.",
+                "markdown": "**Exception Logging May Expose Sensitive Object State** (`CERBI006`)\n\nReplace '{@payload}' with individually named, safe fields. If the full object is required for diagnostics, apply a Cerbi destructuring policy or use a masking destructuring policy.\n\nSee: https://cerbi.io/scanner/rules/cerbi006"
               },
               "helpUri": "https://cerbi.io/scanner/rules/cerbi006",
               "defaultConfiguration": {
@@ -92,7 +92,7 @@
           "ruleId": "CERBI002",
           "level": "error",
           "message": {
-            "text": "Template field \u0027rawBody\u0027 suggests raw body or payload data is being logged. Raw request/response bodies frequently contain credentials, PII, or secrets."
+            "text": "Template field 'rawBody' suggests raw body or payload data is being logged. Raw request/response bodies frequently contain credentials, PII, or secrets."
           },
           "properties": {
             "security-severity": "8.0"
@@ -109,20 +109,13 @@
                 }
               }
             }
-          ],
-          "fixes": [
-            {
-              "description": {
-                "text": "Replace \u0027{{ rawBody }}\u0027 with individually named safe fields. If body inspection is required for debugging, apply a content-filtering or redaction pipeline before logging."
-              }
-            }
           ]
         },
         {
           "ruleId": "CERBI003",
           "level": "error",
           "message": {
-            "text": "Structured field \u0027password\u0027 is not allowed by the active logging policy. Profile: \u0027default\u0027."
+            "text": "Structured field 'password' is not allowed by the active logging policy. Profile: 'default'."
           },
           "properties": {
             "security-severity": "8.0"
@@ -137,13 +130,6 @@
                   "startLine": 20,
                   "startColumn": 5
                 }
-              }
-            }
-          ],
-          "fixes": [
-            {
-              "description": {
-                "text": "Remove the \u0027password\u0027 field from the log call. If this data is needed for debugging, use a Cerbi redaction adapter."
               }
             }
           ]
@@ -152,7 +138,7 @@
           "ruleId": "CERBI001",
           "level": "error",
           "message": {
-            "text": "Field \u0027email\u0027 is considered sensitive (profile: \u0027default\u0027). Logging sensitive fields may expose PII or confidential data in log sinks."
+            "text": "Field 'email' is considered sensitive (profile: 'default'). Logging sensitive fields may expose PII or confidential data in log sinks."
           },
           "properties": {
             "security-severity": "8.0"
@@ -169,20 +155,13 @@
                 }
               }
             }
-          ],
-          "fixes": [
-            {
-              "description": {
-                "text": "Review whether \u0027email\u0027 needs to be logged. Consider masking, hashing, or omitting this field. Use a Cerbi redaction adapter if the field is required for diagnostics."
-              }
-            }
           ]
         },
         {
           "ruleId": "CERBI004",
           "level": "warning",
           "message": {
-            "text": "Structured field \u0027email\u0027 looks high-cardinality and may increase log index/storage cost."
+            "text": "Structured field 'email' looks high-cardinality and may increase log index/storage cost."
           },
           "properties": {
             "security-severity": "4.0"
@@ -199,20 +178,13 @@
                 }
               }
             }
-          ],
-          "fixes": [
-            {
-              "description": {
-                "text": "Keep \u0027email\u0027 out of indexed dimensions unless it is explicitly needed for correlation; prefer sampling, hashing, or non-indexed attributes."
-              }
-            }
           ]
         },
         {
           "ruleId": "CERBI003",
           "level": "error",
           "message": {
-            "text": "Structured field \u0027authorization\u0027 is not allowed by the active logging policy. Profile: \u0027default\u0027."
+            "text": "Structured field 'authorization' is not allowed by the active logging policy. Profile: 'default'."
           },
           "properties": {
             "security-severity": "8.0"
@@ -229,20 +201,13 @@
                 }
               }
             }
-          ],
-          "fixes": [
-            {
-              "description": {
-                "text": "Remove the \u0027authorization\u0027 field from the log call. If this data is needed for debugging, use a Cerbi redaction adapter."
-              }
-            }
           ]
         },
         {
           "ruleId": "CERBI003",
           "level": "error",
           "message": {
-            "text": "Structured field \u0027ssn\u0027 is not allowed by the active logging policy. Profile: \u0027default\u0027."
+            "text": "Structured field 'ssn' is not allowed by the active logging policy. Profile: 'default'."
           },
           "properties": {
             "security-severity": "8.0"
@@ -259,20 +224,13 @@
                 }
               }
             }
-          ],
-          "fixes": [
-            {
-              "description": {
-                "text": "Remove the \u0027ssn\u0027 field from the log call. If this data is needed for debugging, use a Cerbi redaction adapter."
-              }
-            }
           ]
         },
         {
           "ruleId": "CERBI006",
           "level": "warning",
           "message": {
-            "text": "Destructuring operator used on \u0027payload\u0027 (potentially-sensitive object type). Object destructuring serialises the full object graph into the log, which may expose sensitive fields that are not individually named."
+            "text": "Destructuring operator used on 'payload' (potentially-sensitive object type). Object destructuring serialises the full object graph into the log, which may expose sensitive fields that are not individually named."
           },
           "properties": {
             "security-severity": "4.0"
@@ -287,13 +245,6 @@
                   "startLine": 23,
                   "startColumn": 5
                 }
-              }
-            }
-          ],
-          "fixes": [
-            {
-              "description": {
-                "text": "Replace \u0027{@payload}\u0027 with individually named, safe fields. If the full object is required for diagnostics, apply a Cerbi destructuring policy or use a masking destructuring policy."
               }
             }
           ]
@@ -302,7 +253,7 @@
           "ruleId": "CERBI002",
           "level": "error",
           "message": {
-            "text": "Template field \u0027payload\u0027 suggests raw body or payload data is being logged. Raw request/response bodies frequently contain credentials, PII, or secrets."
+            "text": "Template field 'payload' suggests raw body or payload data is being logged. Raw request/response bodies frequently contain credentials, PII, or secrets."
           },
           "properties": {
             "security-severity": "8.0"
@@ -319,20 +270,13 @@
                 }
               }
             }
-          ],
-          "fixes": [
-            {
-              "description": {
-                "text": "Replace \u0027{{ payload }}\u0027 with individually named safe fields. If body inspection is required for debugging, apply a content-filtering or redaction pipeline before logging."
-              }
-            }
           ]
         },
         {
           "ruleId": "CERBI003",
           "level": "error",
           "message": {
-            "text": "Structured field \u0027sessionId\u0027 is not allowed by the active logging policy. Profile: \u0027default\u0027."
+            "text": "Structured field 'sessionId' is not allowed by the active logging policy. Profile: 'default'."
           },
           "properties": {
             "security-severity": "8.0"
@@ -347,13 +291,6 @@
                   "startLine": 24,
                   "startColumn": 5
                 }
-              }
-            }
-          ],
-          "fixes": [
-            {
-              "description": {
-                "text": "Remove the \u0027sessionId\u0027 field from the log call. If this data is needed for debugging, use a Cerbi redaction adapter."
               }
             }
           ]
@@ -362,7 +299,7 @@
           "ruleId": "CERBI001",
           "level": "error",
           "message": {
-            "text": "Field \u0027userId\u0027 is considered sensitive (profile: \u0027default\u0027). Logging sensitive fields may expose PII or confidential data in log sinks."
+            "text": "Field 'userId' is considered sensitive (profile: 'default'). Logging sensitive fields may expose PII or confidential data in log sinks."
           },
           "properties": {
             "security-severity": "8.0"
@@ -379,20 +316,13 @@
                 }
               }
             }
-          ],
-          "fixes": [
-            {
-              "description": {
-                "text": "Review whether \u0027userId\u0027 needs to be logged. Consider masking, hashing, or omitting this field. Use a Cerbi redaction adapter if the field is required for diagnostics."
-              }
-            }
           ]
         },
         {
           "ruleId": "CERBI004",
           "level": "warning",
           "message": {
-            "text": "Structured field \u0027sessionId\u0027 looks high-cardinality and may increase log index/storage cost."
+            "text": "Structured field 'sessionId' looks high-cardinality and may increase log index/storage cost."
           },
           "properties": {
             "security-severity": "4.0"
@@ -409,20 +339,13 @@
                 }
               }
             }
-          ],
-          "fixes": [
-            {
-              "description": {
-                "text": "Keep \u0027sessionId\u0027 out of indexed dimensions unless it is explicitly needed for correlation; prefer sampling, hashing, or non-indexed attributes."
-              }
-            }
           ]
         },
         {
           "ruleId": "CERBI004",
           "level": "warning",
           "message": {
-            "text": "Structured field \u0027requestId\u0027 looks high-cardinality and may increase log index/storage cost."
+            "text": "Structured field 'requestId' looks high-cardinality and may increase log index/storage cost."
           },
           "properties": {
             "security-severity": "4.0"
@@ -437,13 +360,6 @@
                   "startLine": 24,
                   "startColumn": 5
                 }
-              }
-            }
-          ],
-          "fixes": [
-            {
-              "description": {
-                "text": "Keep \u0027requestId\u0027 out of indexed dimensions unless it is explicitly needed for correlation; prefer sampling, hashing, or non-indexed attributes."
               }
             }
           ]
