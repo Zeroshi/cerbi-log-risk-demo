@@ -5,8 +5,8 @@ GitHub Codespaces gives each user their own isolated development environment for
 ## What Codespaces creates
 
 - Each user creates their own Codespace from the repository or fork they selected.
-- The container uses the Microsoft .NET 10 devcontainer image configured in `.devcontainer/devcontainer.json`.
-- Container startup restores and builds the unsafe and safe sample applications targeting .NET 10.
+- The container uses the Microsoft .NET 9 devcontainer image configured in `.devcontainer/devcontainer.json`.
+- Container startup restores and builds the unsafe and safe sample applications targeting .NET 9.
 - `README.md` and `docs/demo-script.md` open automatically in VS Code for the walkthrough.
 - The setup script installs or updates the default `Cerbi.Scanner` .NET tool package so `cerbi-scanner` is available on `PATH`.
 - No secrets are required for the sample application projects.
@@ -122,4 +122,4 @@ Do not replace it with a guessed URL. After the repository is published in GitHu
 
 ## Fresh rebuild expectation
 
-After a full Codespaces rebuild, or after deleting and recreating the Codespace from the updated branch, the demo should work without runtime mismatch errors: the container uses .NET 10, both sample APIs target `net10.0`, startup restores and builds both projects, and the `Cerbi.Scanner` tool is installed or updated before the walkthrough.
+After a full Codespaces rebuild, or after deleting and recreating the Codespace from the updated branch, the demo should work without runtime mismatch errors: the container uses .NET 9, both sample APIs target `net9.0`, startup restores and builds both projects, and the `Cerbi.Scanner` tool is installed or updated before the walkthrough.

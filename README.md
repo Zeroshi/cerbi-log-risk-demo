@@ -28,7 +28,7 @@ The sample is intentionally small. It is designed to run in GitHub Codespaces wi
 
 Prerequisites:
 
-- .NET 10 SDK for the sample applications.
+- .NET 9 SDK for the sample applications.
 - A Cerbi Scanner CLI installation that matches your Cerbi distribution. The default .NET tool package ID used by this repo is `Cerbi.Scanner`; override it with `CERBI_SCANNER_PACKAGE` only if your licensed distribution uses a different package ID.
 
 Build the samples:
@@ -60,7 +60,7 @@ Expected demo result: unsafe findings are reported in `src/dotnet/UnsafeApi`, wh
 Use this path when a prospect should run the Cerbi demo without installing .NET locally.
 
 1. Click the **Open in GitHub Codespaces** badge at the top of this README.
-2. Wait for the container to build. The dev container uses the stable Microsoft .NET 10 devcontainer image, installs GitHub CLI support, restores both sample projects, builds the demo, and installs or updates the `Cerbi.Scanner` .NET tool.
+2. Wait for the container to build. The dev container uses the stable Microsoft .NET 9 devcontainer image, installs GitHub CLI support, restores both sample projects, builds the demo, and installs or updates the `Cerbi.Scanner` .NET tool.
 3. If you already had a Codespace open before a devcontainer change, rebuild it from VS Code with **Codespaces: Rebuild Container** or delete the old Codespace and create a new one from the updated branch.
 4. From the Codespaces terminal, verify the environment from the repository root:
 
@@ -114,7 +114,7 @@ cerbi-scanner scan \
   --summary scan-results/build-summary.md
 ```
 
-Fresh rebuild expectation: after a Codespaces rebuild or after deleting and recreating the Codespace, the demo should have .NET 10, restored and built sample projects, and the current `Cerbi.Scanner` tool available as `cerbi-scanner`.
+Fresh rebuild expectation: after a Codespaces rebuild or after deleting and recreating the Codespace, the demo should have .NET 9, restored and built sample projects, and the current `Cerbi.Scanner` tool available as `cerbi-scanner`.
 
 ### Codespaces troubleshooting
 
