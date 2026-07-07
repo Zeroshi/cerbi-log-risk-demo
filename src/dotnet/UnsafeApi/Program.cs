@@ -6,6 +6,9 @@ builder.Logging.AddConsole();
 
 var app = builder.Build();
 
+const string ServiceName = "checkout-api";
+var environment = app.Environment.EnvironmentName;
+
 app.MapPost("/checkout", async (HttpContext context, ILoggerFactory loggerFactory) =>
 {
     var logger = loggerFactory.CreateLogger("UnsafeApi.Checkout");
@@ -13,18 +16,20 @@ app.MapPost("/checkout", async (HttpContext context, ILoggerFactory loggerFactor
     var rawBody = await reader.ReadToEndAsync();
 
     var request = JsonSerializer.Deserialize<CheckoutRequest>(rawBody) ?? CheckoutRequest.Demo();
-    var bearerToken = context.Request.Headers.Authorization.ToString();
-    var jwtLikeToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.demo.signature";
+    var correlationId = context.Request.Headers.TryGetValue("X-Correlation-Id", out var value)
+        ? value.ToString()
+        : context.TraceIdentifier;
 
-    logger.LogInformation("Raw checkout body: {rawBody}", rawBody);
-    logger.LogInformation("Customer login email={email} password={password}", request.Email, request.Password);
-    logger.LogWarning("Authorization header {authorization} fallbackToken {token}", bearerToken, jwtLikeToken);
-    logger.LogInformation("Payment card {creditCard} ssn {ssn}", request.CardNumber, request.Ssn);
-    logger.LogInformation("Checkout object dump {@payload}", request);
-    logger.LogInformation("User activity userId={userId} sessionId={sessionId} customerId={customerId} requestId={requestId}",
-        request.UserId, request.SessionId, request.CustomerId, context.TraceIdentifier);
+    logger.LogInformation(
+        "{eventName} service={service} environment={environment} correlationId={correlationId} outcome={outcome} amountBucket={amountBucket}",
+        "checkout.accepted",
+        ServiceName,
+        environment,
+        correlationId,
+        "accepted",
+        AmountBucket.From(request.Amount));
 
-    return Results.Accepted($"/checkout/{request.OrderId}", new { request.OrderId });
+    return Results.Accepted($"/checkout/{request.OrderId}", new { request.OrderId, correlationId });
 });
 
 app.MapGet("/demo", () => CheckoutRequest.Demo());
@@ -52,4 +57,14 @@ public sealed record CheckoutRequest(
         "sess_8b9c7d6e5f4a3b2c1d0e",
         "cust_900000123456",
         149.95m);
+}
+
+public static class AmountBucket
+{
+    public static string From(decimal amount) => amount switch
+    {
+        < 50m => "low",
+        < 500m => "standard",
+        _ => "high"
+    };
 }
