@@ -54,6 +54,41 @@ jobs:
             --sarif scan-results/findings.sarif \
             --summary scan-results/build-summary.md
 
+      - name: Normalize SARIF for GitHub upload
+        if: always() && hashFiles('scan-results/findings.sarif') != ''
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          sarif_path = Path("scan-results/findings.sarif")
+          sarif = json.loads(sarif_path.read_text())
+          removed = 0
+
+          for run in sarif.get("runs", []):
+              for result in run.get("results", []):
+                  fixes = result.get("fixes")
+                  if not isinstance(fixes, list):
+                      continue
+
+                  valid_fixes = [
+                      fix for fix in fixes
+                      if isinstance(fix, dict)
+                      and isinstance(fix.get("artifactChanges"), list)
+                      and fix["artifactChanges"]
+                  ]
+                  removed += len(fixes) - len(valid_fixes)
+
+                  if valid_fixes:
+                      result["fixes"] = valid_fixes
+                  else:
+                      result.pop("fixes", None)
+
+          sarif_path.write_text(json.dumps(sarif, indent=2) + "\n")
+          print(f"Removed {removed} incomplete SARIF fix entr{'y' if removed == 1 else 'ies'}.")
+          PY
+
       - name: Upload scan artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -63,6 +98,6 @@ jobs:
 
       - name: Upload SARIF to code scanning
         if: always() && hashFiles('scan-results/findings.sarif') != ''
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: scan-results/findings.sarif
