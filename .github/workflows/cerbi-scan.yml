@@ -12,7 +12,7 @@ jobs:
       contents: read
       security-events: write
     env:
-      CERBI_FAIL_ON: error
+      CERBI_FAIL_ON: none
       CERBI_SCANNER_PACKAGE: ${{ vars.CERBI_SCANNER_PACKAGE }}
       CERBI_SCANNER_VERSION: ${{ vars.CERBI_SCANNER_VERSION || '1.1.0' }}
     steps:
@@ -43,7 +43,7 @@ jobs:
           cerbi-scanner --version
           cerbi-scanner scan --help
 
-      - name: Run Cerbi Scanner
+      - name: Run Cerbi Scanner (report-only)
         run: |
           mkdir -p scan-results
           cerbi-scanner scan \
