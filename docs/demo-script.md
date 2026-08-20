@@ -2,7 +2,7 @@
 
 ## 0:00 - Set the context
 
-"This demo shows how Cerbi helps teams find unsafe logs before they reach production. We start with normal application code, scan it in CI, fail based on policy, and then show the corrected pattern. Runtime governance is optional defense-in-depth after scanner adoption."
+"This demo shows how Cerbi helps teams find unsafe logs before they reach production. We start with normal application code, scan it in CI, review findings against policy, and then show the corrected pattern. Runtime governance is optional defense-in-depth after scanner adoption."
 
 ## 0:45 - Open the unsafe file
 
@@ -19,35 +19,40 @@ Point out the unsafe examples:
 
 ## 1:45 - Run or show the scanner
 
-The Codespaces rebuild installs .NET 9 and installs or updates the default `Cerbi.Scanner` .NET tool. If the Codespace was created before devcontainer updates, rebuild the container or delete and recreate the Codespace from the updated branch. From the repository root, run the documented scanner command:
+The Codespaces rebuild uses .NET 10 LTS and installs Cerbi Scanner 1.1.0. If the Codespace was created before the runtime update, rebuild the container or create a fresh Codespace.
+
+For a first-look demo, run Scanner in report-only mode:
 
 ```bash
 mkdir -p scan-results
 cerbi-scanner scan \
   --path . \
   --policy policies/cerbi-policy.yml \
-  --fail-on error \
+  --fail-on none \
   --format json --output scan-results/findings.json \
   --sarif scan-results/findings.sarif \
   --summary scan-results/build-summary.md
 ```
 
-Generated scan output belongs under ignored `scan-results/`. Keep checked-in sample outputs under `examples/` as stable fallback demo artifacts. If the scanner is not installed in the demo environment, open `examples/findings.json`, `examples/findings.sarif`, or `examples/build-summary.md` and explain that they are sample outputs representing the expected scanner result.
+Open the generated report and point out that the checked-in Scanner 1.1.0 example contains 12 findings. Use the actual examples: `password` and `email` at `src/dotnet/UnsafeApi/Program.cs:20`, and high-cardinality `sessionId` at line 24.
 
-## 2:30 - Show the policy and pipeline failure behavior
+Generated scan output belongs under ignored `scan-results/`. Stable sample output is checked in under `examples/` so the walkthrough still has inspectable evidence when you do not want to run the scanner live.
+
+## 2:30 - Show the policy and gate behavior
 
 Open `policies/cerbi-policy.yml`.
 
 Explain:
 
-- `--fail-on error` means error-severity findings fail CI.
+- `--fail-on none` reports findings without failing the command.
+- `--fail-on error` maps to Scanner's high-severity threshold and returns a non-zero exit code when a high-or-higher finding exists.
 - Required fields keep logs traceable: `service`, `environment`, `correlationId`, `eventName`.
-- Disallowed fields prevent credentials, regulated identifiers, and raw payloads from leaving the app.
-- High-cardinality warnings help reduce downstream logging cost and index pressure.
+- Disallowed fields prevent credential and sensitive-field patterns from being treated as acceptable logging.
+- High-cardinality warnings help identify downstream logging cost and index pressure.
 
-Open `.github/workflows/cerbi-scan.yml` or `.azure-pipelines/cerbi-scan.yml`.
+Then show the gate command or pipeline configuration with `--fail-on error`.
 
-Explain that teams copy the pipeline, point it at their policy, and publish JSON/SARIF/summary artifacts for developers and security review.
+Open `.github/workflows/cerbi-scan.yml` or `.azure-pipelines/cerbi-scan.yml` and explain that both run the same Scanner CLI engine and can publish JSON, SARIF, and Markdown artifacts.
 
 ## 3:30 - Open the safe file
 
@@ -58,10 +63,10 @@ Point out the corrected pattern:
 - Stable event name: `checkout.accepted`.
 - Required governance fields: `service`, `environment`, `correlationId`, `eventName`.
 - No password, token, authorization header, raw body, SSN, or card number.
-- Uses a low-cardinality amount bucket instead of dumping the full checkout object.
+- Uses a lower-cardinality amount bucket instead of dumping the full checkout object.
 
 ## 4:30 - Connect scanner-first to runtime governance
 
-"The scanner catches risky logs before merge. For services that need defense-in-depth, CerbiShield can enforce the same governance schema at runtime. The runtime path should be local, deterministic, and lightweight: cached rules, redaction or tagging before logs reach sinks, and no dependency on a public control-plane service in the hot path."
+"Scanner is the low-friction discovery and CI path. If selected workloads also need runtime enforcement, CerbiStream or Cerbi Gateway can apply governance at a runtime boundary while CerbiShield manages policy and evidence. Scanner itself does not require that runtime deployment."
 
-Close by asking which repository or service they want to scan first.
+Close by asking which repository or service they would want to scan first.
