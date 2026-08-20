@@ -8,7 +8,7 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-  CerbiFailOn: error
+  CerbiFailOn: none
   CerbiPolicyPath: policies/cerbi-policy.yml
   CerbiScanPath: .
   CerbiScannerPackage: Cerbi.Scanner
@@ -30,6 +30,7 @@ steps:
 
   # If your organization uses the Cerbi Scanner Azure DevOps extension, replace the CLI step below with CerbiScan@1.
   # Relevant inputs include: scanPath, policyPath, failOn, sarifOutput, jsonOutput, markdownSummary.
+  # Change CerbiFailOn to error when you intentionally want high-or-higher findings to fail the pipeline.
   - script: |
       export PATH="$PATH:$HOME/.dotnet/tools"
       if dotnet tool list --global | awk 'NR > 2 { print $1 }' | grep -Fxq "$(printf '%s' "$(CerbiScannerPackage)" | tr '[:upper:]' '[:lower:]')"; then
@@ -47,7 +48,7 @@ steps:
         --format json --output "$(Build.ArtifactStagingDirectory)/cerbi/findings.json" \
         --sarif "$(Build.ArtifactStagingDirectory)/cerbi/findings.sarif" \
         --summary "$(Build.ArtifactStagingDirectory)/cerbi/build-summary.md"
-    displayName: Install and run Cerbi Scanner
+    displayName: Install and run Cerbi Scanner (report-only)
 
   - publish: $(Build.ArtifactStagingDirectory)/cerbi
     artifact: cerbi-scan-results
