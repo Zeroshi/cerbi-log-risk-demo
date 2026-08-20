@@ -18,18 +18,18 @@ steps:
   - checkout: self
 
   - task: UseDotNet@2
-    displayName: Use .NET 9 SDK
+    displayName: Use .NET 10 LTS SDK
     inputs:
       packageType: sdk
-      version: 9.0.x
+      version: 10.0.x
 
   - script: |
       dotnet build src/dotnet/UnsafeApi/UnsafeApi.csproj --configuration Release
       dotnet build src/dotnet/SafeApi/SafeApi.csproj --configuration Release
     displayName: Build demo APIs
 
-  # If your organization uses the Cerbi Scanner Azure DevOps extension, replace the CLI step below with that task.
-  # Example inputs to map: scanPath, policyPath, failOn, sarifOutput, jsonOutput, summaryOutput.
+  # If your organization uses the Cerbi Scanner Azure DevOps extension, replace the CLI step below with CerbiScan@1.
+  # Relevant inputs include: scanPath, policyPath, failOn, sarifOutput, jsonOutput, markdownSummary.
   - script: |
       export PATH="$PATH:$HOME/.dotnet/tools"
       if dotnet tool list --global | awk 'NR > 2 { print $1 }' | grep -Fxq "$(printf '%s' "$(CerbiScannerPackage)" | tr '[:upper:]' '[:lower:]')"; then
@@ -37,7 +37,7 @@ steps:
       else
         dotnet tool install --global "$(CerbiScannerPackage)" --version "$(CerbiScannerVersion)"
       fi
-      cerbi-scanner --help
+      cerbi-scanner --version
       cerbi-scanner scan --help
       mkdir -p $(Build.ArtifactStagingDirectory)/cerbi
       cerbi-scanner scan \
