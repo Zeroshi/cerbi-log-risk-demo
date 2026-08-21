@@ -11,93 +11,27 @@ jobs:
     permissions:
       contents: read
       security-events: write
-    env:
-      CERBI_FAIL_ON: none
-      CERBI_SCANNER_PACKAGE: ${{ vars.CERBI_SCANNER_PACKAGE }}
-      CERBI_SCANNER_VERSION: ${{ vars.CERBI_SCANNER_VERSION || '1.1.0' }}
+
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
-      - name: Setup .NET 10 LTS
-        uses: actions/setup-dotnet@v4
+      - name: Run Cerbi Scanner
+        id: cerbi
+        uses: Zeroshi/cerbi-scanner-action@v1
         with:
-          dotnet-version: '10.0.x'
-
-      - name: Build samples
-        run: |
-          dotnet build src/dotnet/UnsafeApi/UnsafeApi.csproj --configuration Release
-          dotnet build src/dotnet/SafeApi/SafeApi.csproj --configuration Release
-
-      - name: Install or update Cerbi Scanner
-        shell: bash
-        run: |
-          echo "$HOME/.dotnet/tools" >> "$GITHUB_PATH"
-          export PATH="$PATH:$HOME/.dotnet/tools"
-          package_id="${CERBI_SCANNER_PACKAGE:-Cerbi.Scanner}"
-          if dotnet tool list --global | awk 'NR > 2 { print $1 }' | grep -Fxq "$(printf '%s' "$package_id" | tr '[:upper:]' '[:lower:]')"; then
-            dotnet tool update --global "$package_id" --version "$CERBI_SCANNER_VERSION"
-          else
-            dotnet tool install --global "$package_id" --version "$CERBI_SCANNER_VERSION"
-          fi
-          cerbi-scanner --version
-          cerbi-scanner scan --help
-
-      - name: Run Cerbi Scanner (report-only)
-        run: |
-          mkdir -p scan-results
-          cerbi-scanner scan \
-            --path . \
-            --policy policies/cerbi-policy.yml \
-            --fail-on "$CERBI_FAIL_ON" \
-            --format json --output scan-results/findings.json \
-            --sarif scan-results/findings.sarif \
-            --summary scan-results/build-summary.md
-
-      - name: Normalize SARIF for GitHub upload
-        if: always() && hashFiles('scan-results/findings.sarif') != ''
-        shell: bash
-        run: |
-          python - <<'PY'
-          import json
-          from pathlib import Path
-
-          sarif_path = Path("scan-results/findings.sarif")
-          sarif = json.loads(sarif_path.read_text())
-          removed = 0
-
-          for run in sarif.get("runs", []):
-              for result in run.get("results", []):
-                  fixes = result.get("fixes")
-                  if not isinstance(fixes, list):
-                      continue
-
-                  valid_fixes = [
-                      fix for fix in fixes
-                      if isinstance(fix, dict)
-                      and isinstance(fix.get("artifactChanges"), list)
-                      and fix["artifactChanges"]
-                  ]
-                  removed += len(fixes) - len(valid_fixes)
-
-                  if valid_fixes:
-                      result["fixes"] = valid_fixes
-                  else:
-                      result.pop("fixes", None)
-
-          sarif_path.write_text(json.dumps(sarif, indent=2) + "\n")
-          print(f"Removed {removed} incomplete SARIF fix entr{'y' if removed == 1 else 'ies'}.")
-          PY
+          path: .
+          policy: policies/cerbi-policy.yml
+          fail-on: none
+          scanner-version: '1.1.0'
+          upload-sarif: 'true'
 
       - name: Upload scan artifacts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: cerbi-scan-results
-          path: scan-results/
-
-      - name: Upload SARIF to code scanning
-        if: always() && hashFiles('scan-results/findings.sarif') != ''
-        uses: github/codeql-action/upload-sarif@v4
-        with:
-          sarif_file: scan-results/findings.sarif
+          path: |
+            ${{ steps.cerbi.outputs.json-file }}
+            ${{ steps.cerbi.outputs.sarif-file }}
+            ${{ steps.cerbi.outputs.summary-file }}
