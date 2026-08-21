@@ -7,10 +7,21 @@ on:
 
 jobs:
   cerbi-scan:
-    runs-on: ubuntu-latest
+    name: Cerbi scan (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
     permissions:
       contents: read
       security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            upload-sarif: 'true'
+          - os: windows-latest
+            upload-sarif: 'false'
+          - os: macos-latest
+            upload-sarif: 'false'
 
     steps:
       - name: Checkout
@@ -24,13 +35,13 @@ jobs:
           policy: policies/cerbi-policy.yml
           fail-on: none
           scanner-version: '1.1.0'
-          upload-sarif: 'true'
+          upload-sarif: ${{ matrix.upload-sarif }}
 
       - name: Upload Cerbi scan artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cerbi-scan-results
+          name: cerbi-scan-results-${{ runner.os }}
           path: |
             ${{ steps.cerbi.outputs.json-file }}
             ${{ steps.cerbi.outputs.sarif-file }}
